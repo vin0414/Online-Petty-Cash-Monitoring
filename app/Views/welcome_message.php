@@ -59,17 +59,17 @@
                           <?= session()->getFlashdata('fail'); ?>
                       </div>
                   <?php endif; ?>
-                  <form method="POST" class="row g-3 needs-validation" novalidate>
+                  <form method="POST" action="<?=base_url('auth')?>" class="row g-3 needs-validation">
                     <?= csrf_field(); ?>
                     <div class="col-12">
                       <label for="yourUsername" class="form-label">Username</label>
-                      <input type="text" name="username" class="form-control" id="yourUsername" required>
-                      <div class="invalid-feedback">Please enter your username.</div>
+                      <input type="text" name="username" class="form-control" id="yourUsername" value="<?=set_value('username')?>" required>
+                      <div class="text-danger"><?=isset($validation)? display_error($validation,'username') : '' ?></div>
                     </div>
                     <div class="col-12">
                       <label for="yourPassword" class="form-label">Password</label>
                       <input type="password" name="password" class="form-control" id="yourPassword" required>
-                      <div class="invalid-feedback">Please enter your password!</div>
+                      <div class="text-danger"><?=isset($validation)? display_error($validation,'password') : '' ?></div>
                     </div>
                     <div class="col-12">
                       <div class="form-check">

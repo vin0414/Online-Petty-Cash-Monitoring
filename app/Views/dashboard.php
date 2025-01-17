@@ -6,9 +6,9 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>Dashboard - NiceAdmin Bootstrap Template</title>
-  <meta content="" name="description">
-  <meta content="" name="keywords">
+  <title>Online Petty Cash - Dashboard</title>
+  <meta content="description" name="Online petty-cash system for APFC Employees">
+  <meta content="keywords" name="petty cash, petty-cash, finance">
 
   <!-- Favicons -->
   <link href="assets/img/favicon.png" rel="icon">
@@ -32,13 +32,10 @@
 </head>
 
 <body>
-
   <!-- ======= Header ======= -->
-  
-
+  <?= $this->include('templates/header'); ?>
   <!-- ======= Sidebar ======= -->
-  
-
+  <?= $this->include('templates/sidebar'); ?>
   <main id="main" class="main">
 
     <div class="pagetitle">

@@ -24,6 +24,13 @@
               <i class="bi bi-circle"></i><span>Manage</span>
             </a>
           </li>
+          <?php if(session()->get('role')=="Special-user"||session()->get('role')=="Admin"){ ?>
+          <li>
+            <a href="<?=site_url('review')?>">
+              <i class="bi bi-circle"></i><span>For Review</span>
+            </a>
+          </li>
+          <?php } ?>
         </ul>
       </li><!-- End Forms Nav -->
 
@@ -67,7 +74,14 @@
           <span>Report</span>
         </a>
       </li>
-
+      <?php if(session()->get('role')=="Admin"){ ?>
+        <li class="nav-item">
+          <a class="nav-link collapsed" href="<?=site_url('configure')?>">
+            <i class="bi bi-gear"></i>
+            <span>Configuration</span>
+          </a>
+        </li>
+      <?php } ?>
     </ul>
 
   </aside><!-- End Sidebar-->

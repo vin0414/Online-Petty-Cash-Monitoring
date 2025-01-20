@@ -20,7 +20,11 @@ class Home extends BaseController
 
     public function newRequest()
     {
-        return view('new');
+        $accountModel = new \App\Models\accountModel();
+        $account = $accountModel->WHERE('Role','Special-user')->findAll();
+
+        $data = ['account'=>$account];
+        return view('new',$data);
     }
 
     public function manageRequest()
@@ -32,5 +36,14 @@ class Home extends BaseController
         //data
         $data = ['files'=>$files];
         return view('manage',$data);
+    }
+
+    public function configure()
+    {
+        if(session()->get('role')=="Admin")
+        {
+            return view('configure');
+        }
+        return redirect("/dashboard");
     }
 }

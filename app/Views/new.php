@@ -112,7 +112,9 @@
                         <div class="form-floating">
                             <select class="form-control" name="approver" required>
                                 <option value="">Select</option>
-                                <option value="1">First approver</option>
+                                <?php foreach($account as $row):?>
+                                    <option value="<?php echo $row['accountID']?>"><?php echo $row['Fullname'] ?></option>
+                                <?php endforeach; ?>
                             </select>
                             <label>Department Head/Intermediate Supervisor</label>
                         </div>

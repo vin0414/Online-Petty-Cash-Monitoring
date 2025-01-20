@@ -56,20 +56,20 @@
                         <?= session()->getFlashdata('success'); ?>
                     </div>
                 <?php endif; ?>
-                <form method="POST" action="<?=site_url('save')?>" class="row g-3" id="frmRequest">
+                <form method="POST" action="<?=site_url('save')?>" enctype="multipart/form-data" class="row g-3" id="frmRequest">
                     <?= csrf_field(); ?>
                     <div class="col-12">
                         <div class="row g-3">
                             <div class="col-lg-7">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control" name="fullname" required/>
+                                    <input type="text" class="form-control" name="fullname" value="<?=set_value('fullname')?>" required/>
                                     <label>Fullname</label>
                                 </div>
                                 <div class="text-danger"><?=isset($validation)? display_error($validation,'fullname') : '' ?></div>
                             </div>
                             <div class="col-lg-3">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control" name="department" required/>
+                                    <input type="text" class="form-control" name="department" value="<?=set_value('department')?>" required/>
                                     <label>Department</label>
                                 </div>
                                 <div class="text-danger"><?=isset($validation)? display_error($validation,'department') : '' ?></div>
@@ -85,7 +85,7 @@
                     </div>
                     <div class="col-12">
                         <div class="form-floating">
-                            <textarea class="form-control" name="purpose" style="height:150px;"></textarea>
+                            <textarea class="form-control" name="purpose" style="height:150px;" required><?=set_value('purpose')?></textarea>
                             <label>Purpose</label>
                         </div>
                         <div class="text-danger"><?=isset($validation)? display_error($validation,'purpose') : '' ?></div>
@@ -94,14 +94,14 @@
                         <div class="row g-3">
                             <div class="col-lg-6">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control" name="amount" required/>
+                                    <input type="text" class="form-control" name="amount" value="<?=set_value('amount')?>" required/>
                                     <label>Amount</label>
                                 </div>
                                 <div class="text-danger"><?=isset($validation)? display_error($validation,'amount') : '' ?></div>
                             </div>
                             <div class="col-lg-6">
                                 <div class="form-floating">
-                                    <input type="file" class="form-control" name="file" required/>
+                                    <input type="file" class="form-control" name="file" value="<?=set_value('file')?>" required/>
                                     <label>Attachment</label>
                                 </div>
                                 <div class="text-danger"><?=isset($validation)? display_error($validation,'file') : '' ?></div>
@@ -112,6 +112,7 @@
                         <div class="form-floating">
                             <select class="form-control" name="approver" required>
                                 <option value="">Select</option>
+                                <option value="1">First approver</option>
                             </select>
                             <label>Department Head/Intermediate Supervisor</label>
                         </div>
@@ -155,6 +156,12 @@
 
   <!-- Template Main JS File -->
   <script src="assets/js/main.js"></script>
+  <script type="text/javascript">
+    // Reset form if the success message is displayed
+    <?php if(!empty(session()->getFlashdata('success'))): ?>
+        $('#frmRequest')[0].reset();
+    <?php endif; ?>
+   </script>
 </body>
 
 </html>

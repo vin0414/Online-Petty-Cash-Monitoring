@@ -48,7 +48,61 @@
       </nav>
     </div><!-- End Page Title -->
     <section class="section dashboard">
-
+      <div class="card">
+        <div class="card-body">
+          <br/>
+          <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true">All PCF</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Liquidation</button>
+            </li>
+          </ul>
+          <div class="tab-content pt-2" id="myTabContent">
+            <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="home-tab">
+              <table class="table table-striped datatable" style="font-size:12px;">
+                <thead class="bg-primary text-white">
+                  <th>Date</th>
+                  <th>Fullname</th>
+                  <th>Department</th>
+                  <th>Amount</th>
+                  <th>Purpose</th>
+                  <th>Status</th>
+                </thead>
+                <tbody>
+                <?php foreach($files as $row): ?>
+                  <tr>
+                    <td><?php echo $row['Date'] ?></td>
+                    <td><?php echo $row['Fullname'] ?></td>
+                    <td><?php echo $row['Department'] ?></td>
+                    <td><?php echo number_format($row['Amount'],2) ?></td>
+                    <td><?php echo substr($row['Purpose'],0,50) ?>...</td>
+                    <td>
+                      <?php if($row['Status']==0){ ?>
+                        <span class="badge bg-warning">To Department Head</span>
+                      <?php }else if($row['Status']==1){?>
+                        <span class="badge bg-info">For Verification</span>
+                      <?php }else if($row['Status']==2){?>
+                        <span class="badge bg-danger">Rejected</span>
+                      <?php }else if($row['Status']==3){?>
+                        <span class="badge bg-primary">To Fuel Department</span>
+                      <?php }else if($row['Status']==4){?>
+                        <span class="badge bg-primary">To General Manager</span>
+                      <?php }else if($row['Status']==5){?>
+                        <span class="badge bg-success">Approved</span>
+                      <?php }?>
+                    </td>
+                  </tr>
+                <?php endforeach; ?>
+                </tbody>
+              </table>
+            </div>
+            <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="home-tab">
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
 
   </main><!-- End #main -->

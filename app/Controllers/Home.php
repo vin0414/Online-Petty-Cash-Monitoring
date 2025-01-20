@@ -25,6 +25,12 @@ class Home extends BaseController
 
     public function manageRequest()
     {
-        return view('manage');
+        //request
+        $user = session()->get('loggedUser');
+        $fileModel = new \App\Models\fileModel();
+        $files = $fileModel->WHERE('accountID',$user)->findAll();
+        //data
+        $data = ['files'=>$files];
+        return view('manage',$data);
     }
 }

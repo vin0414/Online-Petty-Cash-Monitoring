@@ -4,6 +4,12 @@ namespace App\Controllers;
 
 class FileController extends BaseController
 {
+    private $db;
+    public function __construct()
+    {
+        helper(['form']);
+        $this->db = db_connect();
+    }
     public function save()
     {
         $fileModel = new \App\Models\fileModel();
@@ -23,23 +29,32 @@ class FileController extends BaseController
             'department'=>'required',
             'date'=>'required',
             'amount'=>'required',
-            'file'=>'required|file',
             'approver'=>'required'
         ]);
+
         if(!$validation)
         {
             return view('new',['validation'=>$this->validator]);
         }
         else
         {
-            $user = session()->get('loggedUser');
-            $status = 0;
-            $amt = str_replace(",","",$amount);
-            $data = ['Fullname'=>$fullname, 'Department'=>$department,'date'=>$date,
-                    'Purpose'=>$purpose,'Amount'=>$amt,'File'=>'N/A','Status'=>$status,'accountID'=>$user];
-            $fileModel->save($data);
-            session()->setFlashdata('success','Great! Successfully submitted');
-            return redirect()->to('/new')->withInput();
+            if ($file->isValid() && ! $file->hasMoved())
+            {
+                $filename = $file->getClientName();
+                $file->move('files/',$filename);
+                $user = session()->get('loggedUser');
+                $status = 0;
+                $amt = str_replace(",","",$amount);
+                $data = ['Fullname'=>$fullname, 'Department'=>$department,'date'=>$date,
+                        'Purpose'=>$purpose,'Amount'=>$amt,'File'=>$filename,'Status'=>$status,'accountID'=>$user];
+                $fileModel->save($data);
+                return redirect()->to('/new')->with('success', 'Form submitted successfully');
+            }
+            else
+            {
+                $validation = ['file','No file was selected or the file is invalid'];
+                return view('new', ['validation' => $validation]);
+            }
         }
     }
 }

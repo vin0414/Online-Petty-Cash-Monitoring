@@ -31,6 +31,8 @@ $routes->set404Override();
 // route since we don't have to scan directories.
 $routes->post('auth','AuthController::auth');
 $routes->get('/logout','AuthController::logout');
+//functions
+$routes->post('save','FileController::save');
 
 $routes->group('',['filter'=>'AlreadyLoggedIn'],function($routes)
 {
@@ -40,6 +42,8 @@ $routes->group('',['filter'=>'AlreadyLoggedIn'],function($routes)
 $routes->group('',['filter'=>'AuthCheck'],function($routes)
 {
     $routes->get('dashboard', 'Home::dashboard');
+    $routes->get('new','Home::newRequest');
+    $routes->get('manage','Home::manageRequest');
 });
 
 /*

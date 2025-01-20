@@ -17,4 +17,14 @@ class Home extends BaseController
     {
         return view('dashboard');
     }
+
+    public function newRequest()
+    {
+        return view('new');
+    }
+
+    public function manageRequest()
+    {
+        return view('manage');
+    }
 }

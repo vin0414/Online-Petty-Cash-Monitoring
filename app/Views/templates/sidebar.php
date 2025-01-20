@@ -15,12 +15,12 @@
         </a>
         <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
           <li>
-            <a href="forms-elements.html">
+            <a href="<?=site_url('new')?>">
               <i class="bi bi-circle"></i><span>New Request</span>
             </a>
           </li>
           <li>
-            <a href="forms-layouts.html">
+            <a href="<?=site_url('manage')?>">
               <i class="bi bi-circle"></i><span>Manage</span>
             </a>
           </li>

@@ -33,17 +33,17 @@
 
 <body>
   <!-- ======= Header ======= -->
-  <?= $this->include('templates/header'); ?>
+  <?= view('templates/header'); ?>
   <!-- ======= Sidebar ======= -->
-  <?= $this->include('templates/sidebar'); ?>
+  <?= view('templates/sidebar'); ?>
   <main id="main" class="main">
 
     <div class="pagetitle">
-      <h1>New PCF</h1>
+      <h1><?=$title?></h1>
       <nav>
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="<?=site_url('dashboard')?>">Home</a></li>
-          <li class="breadcrumb-item active">New PCF</li>
+          <li class="breadcrumb-item active"><?=$title?></li>
         </ol>
       </nav>
     </div><!-- End Page Title -->

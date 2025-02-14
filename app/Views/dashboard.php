@@ -33,22 +33,77 @@
 
 <body>
   <!-- ======= Header ======= -->
-  <?= $this->include('templates/header'); ?>
+  <?= view('templates/header'); ?>
   <!-- ======= Sidebar ======= -->
-  <?= $this->include('templates/sidebar'); ?>
+  <?= view('templates/sidebar'); ?>
   <main id="main" class="main">
 
     <div class="pagetitle">
-      <h1>Dashboard</h1>
+      <h1><?=$title?></h1>
       <nav>
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="<?=site_url('dashboard')?>">Home</a></li>
-          <li class="breadcrumb-item active">Dashboard</li>
+          <li class="breadcrumb-item active"><?=$title?></li>
         </ol>
       </nav>
     </div><!-- End Page Title -->
     <section class="section dashboard">
+      <div class="row g-3">
+        <div class="col-lg-3">
+          <div class="card bg-primary text-white">
+            <div class="card-body">
+              <div class="card-title text-white">Pending</div>
+              <h1>0</h1>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3">
+          <div class="card bg-primary text-white">
+            <div class="card-body">
+              <div class="card-title text-white">Approved</div>
+              <h1>0</h1>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3">
+          <div class="card bg-primary text-white">
+            <div class="card-body">
+              <div class="card-title text-white">Unliquidated</div>
+              <h1>0</h1>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3">
+          <div class="card bg-primary text-white">
+            <div class="card-body">
+              <div class="card-title text-white">Cash Released</div>
+              <h1>0</h1>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row g-3">
+        <div class="col-lg-12">
+          <div class="card">
+            <div class="card-body">
+              <div class="card-title"><i class="icon-copy bi bi-grid"></i>&nbsp;Recent</div>
+              <div class="table-responsive">
+                <table class="table table-striped datatable" style="font-size:12px;">
+                  <thead class="bg-primary text-white">
+                    <th>Date</th>
+                    <th>Fullname</th>
+                    <th>Department</th>
+                    <th>Amount</th>
+                  </thead>
+                  <tbody>
 
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
 
   </main><!-- End #main -->

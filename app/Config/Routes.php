@@ -44,6 +44,7 @@ $routes->group('',['filter'=>'AuthCheck'],function($routes)
     $routes->get('dashboard', 'Home::dashboard');
     $routes->get('new','Home::newRequest');
     $routes->get('manage','Home::manageRequest');
+    $routes->get('review','Home::reviewRequest');
     //configure
     $routes->get('configure','Home::configure');
 });

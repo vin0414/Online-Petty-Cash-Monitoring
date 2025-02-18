@@ -35,28 +35,28 @@
       </li><!-- End Forms Nav -->
       <?php if(session()->get('role')=="Admin"){ ?>
       <li class="nav-item">
-        <a class="nav-link collapsed" href="users-profile.html">
+        <a class="nav-link <?= ($title == 'Cash Reconciliation') ? '' : 'collapsed' ?>" href="users-profile.html">
           <i class="bi bi-briefcase"></i>
           <span>Cash Reconciliation</span>
         </a>
       </li>
 
       <li class="nav-item">
-        <a class="nav-link collapsed" href="pages-faq.html">
+        <a class="nav-link <?= ($title == 'Manage Cash') ? '' : 'collapsed' ?>" href="pages-faq.html">
           <i class="bi bi-clipboard-data"></i>
           <span>Manage Cash</span>
         </a>
       </li>
       <?php } ?>
       <li class="nav-item">
-        <a class="nav-link collapsed" href="pages-contact.html">
+        <a class="nav-link <?= ($title == 'Report') ? '' : 'collapsed' ?>" href="pages-contact.html">
           <i class="bi bi-bar-chart"></i>
           <span>Report</span>
         </a>
       </li>
       <?php if(session()->get('role')=="Admin"){ ?>
         <li class="nav-item">
-          <a class="nav-link collapsed" href="<?=site_url('configure')?>">
+          <a class="nav-link <?= ($title == 'PCF Settings') ? '' : 'collapsed' ?>" href="<?=site_url('configure')?>">
             <i class="bi bi-gear"></i>
             <span>Configuration</span>
           </a>
@@ -64,7 +64,7 @@
       <?php } ?>
       <li class="nav-heading">Account</li>
       <li class="nav-item">
-        <a class="nav-link collapsed" href="pages-contact.html">
+        <a class="nav-link <?= ($title == 'My Account') ? '' : 'collapsed' ?>" href="pages-contact.html">
           <i class="icon-copy bi bi-person"></i>
           <span>My Account</span>
         </a>

@@ -33,6 +33,10 @@ $routes->post('auth','AuthController::auth');
 $routes->get('/logout','AuthController::logout');
 //functions
 $routes->post('save','FileController::save');
+//ajax code
+$routes->get('fetch-assign','Home::fetchAssign');
+$routes->get('fetch-user','Home::fetchUser');
+$routes->post('save-user','Home::saveUser');
 
 $routes->group('',['filter'=>'AlreadyLoggedIn'],function($routes)
 {

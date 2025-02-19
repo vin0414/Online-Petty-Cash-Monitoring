@@ -24,7 +24,7 @@
               <i class="bi bi-circle"></i><span>Manage</span>
             </a>
           </li>
-          <?php if(session()->get('role')=="Special-user"||session()->get('role')=="Admin"){ ?>
+          <?php if(session()->get('role')=="Department Head"||session()->get('role')=="Officer"){ ?>
           <li>
             <a href="<?=site_url('review')?>" class="<?= ($title == 'PCF Review') ? 'active' : '' ?>">
               <i class="bi bi-circle"></i><span>For Review</span>
@@ -33,7 +33,7 @@
           <?php } ?>
         </ul>
       </li><!-- End Forms Nav -->
-      <?php if(session()->get('role')=="Admin"){ ?>
+      <?php if(session()->get('role')=="Department Head"){ ?>
       <li class="nav-item">
         <a class="nav-link <?= ($title == 'Cash Reconciliation') ? '' : 'collapsed' ?>" href="users-profile.html">
           <i class="bi bi-briefcase"></i>

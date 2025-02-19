@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Controllers;
+use App\Libraries\Hash;
 
 class Home extends BaseController
 {
@@ -18,7 +19,14 @@ class Home extends BaseController
     public function dashboard()
     {
         $title = "Dashboard";
-        $data = ['title'=>$title];
+        // pcf
+        $fileModel = new \App\Models\fileModel();
+        $pending = $fileModel->WHERE('Status',0)->countAllResults();
+        $approve = $fileModel->WHERE('Status',5)->countAllResults();
+        $total = $fileModel->countAllResults();
+        $files = $fileModel->findAll();
+
+        $data = ['title'=>$title,'pending'=>$pending,'approve'=>$approve,'total'=>$total,'files'=>$files];
         return view('dashboard',$data);
     }
 
@@ -57,8 +65,17 @@ class Home extends BaseController
         if(session()->get('role')=="Admin")
         {
             $title = "PCF Settings";
+            //logs
+            $builder = $this->db->table('tbl_log a');
+            $builder->select('a.*,b.Fullname');
+            $builder->join('tblaccount b','b.accountID=a.accountID','LEFT');
+            $builder->groupBy('a.logID');
+            $log = $builder->get()->getResult();
+            //accounts
+            $accountModel = new \App\Models\accountModel();
+            $account = $accountModel->findAll();
             //data
-            $data = ['title'=>$title];
+            $data = ['title'=>$title,'log'=>$log,'account'=>$account];
             return view('configure',$data);
         }
         return redirect("/dashboard");
@@ -84,11 +101,11 @@ class Home extends BaseController
         ];
         foreach ($records as $row) {
             $response['data'][] = [
-                'Date' => date('Y-M-d', strtotime($row->DateCreated)),
+                'date' => date('Y-M-d', strtotime($row->DateCreated)),
                 'fullname' => htmlspecialchars($row->Fullname, ENT_QUOTES),
                 'username' => htmlspecialchars($row->Username, ENT_QUOTES),
                 'role' => htmlspecialchars($row->Role, ENT_QUOTES),
-                'actions' => '<button class="btn btn-success btn-sm view" value="' . htmlspecialchars($row->assignID, ENT_QUOTES) . '"><i class="fa-regular fa-pen-to-square"></i>&nbsp;Edit</button>'
+                'action' => '<button class="btn btn-primary btn-sm view" value="' . htmlspecialchars($row->assignID, ENT_QUOTES) . '"><i class="bi bi-pencil-square"></i>&nbsp;Edit</button>'
             ];
         }
         // Return the response as JSON
@@ -126,6 +143,7 @@ class Home extends BaseController
 
     public function saveUser()
     {
+        $accountModel = new \App\Models\accountModel();
         $validation = $this->validate([
             'csrf_test_name'=>'required',
             'fullname'=>'required|is_unique[tblaccount.Fullname]',
@@ -139,7 +157,50 @@ class Home extends BaseController
         }
         else
         {
+            $defaultPassword = Hash::make("Fastcat_01");
+            $data = ['Username'=>$this->request->getPost('username'), 
+                    'Password'=>$defaultPassword,
+                    'Fullname'=>$this->request->getPost('fullname'),
+                    'Role'=>$this->request->getPost('role'),
+                    'Status'=>1,
+                    'DateCreated'=>date('Y-m-d')];
+            $accountModel->save($data);
             
+            date_default_timezone_set('Asia/Manila');
+            $logModel = new \App\Models\logModel();
+            //create log
+            $data = ['Date'=>date('Y-m-d H:i:s a'),'Activity'=>'Added new user account','accountID'=>session()->get('loggedUser')];
+            $logModel->save($data);
+            return $this->response->SetJSON(['success' => 'Successfully submitted']);
+        }
+    }
+
+    public function saveAssign()
+    {
+        $assignModel = new \App\Models\assignModel();
+        $validation = $this->validate([
+            'csrf_test_name'=>'required',
+            'user'=>'required|is_unique[tblassign.accountID]',
+            'level'=>'required|is_unique[tblassign.Role]',
+        ]);
+
+        if(!$validation)
+        {
+            return $this->response->SetJSON(['error' => $this->validator->getErrors()]);
+        }
+        else
+        {
+            $data = ['accountID'=>$this->request->getPost('user')
+                    , 'Role'=>$this->request->getPost('level'),
+                    'DateCreated'=>date('Y-m-d')];
+            $assignModel->save($data);
+
+            date_default_timezone_set('Asia/Manila');
+            $logModel = new \App\Models\logModel();
+            //create log
+            $data = ['Date'=>date('Y-m-d H:i:s a'),'Activity'=>'Assigned new user account','accountID'=>session()->get('loggedUser')];
+            $logModel->save($data);
+            return $this->response->SetJSON(['success' => 'Successfully submitted']);
         }
     }
 }

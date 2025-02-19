@@ -36,7 +36,13 @@ $routes->post('save','FileController::save');
 //ajax code
 $routes->get('fetch-assign','Home::fetchAssign');
 $routes->get('fetch-user','Home::fetchUser');
+$routes->get('for-review','FileController::forReview');
+$routes->get('view-details','FileController::viewDetails');
+
 $routes->post('save-user','Home::saveUser');
+$routes->post('save-assign','Home::saveAssign');
+$routes->post('accept','FileController::accept');
+$routes->post('reject','FileController::reject');
 
 $routes->group('',['filter'=>'AlreadyLoggedIn'],function($routes)
 {

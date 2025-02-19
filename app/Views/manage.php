@@ -6,7 +6,7 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>Online Petty Cash - Dashboard</title>
+  <title>Online Petty Cash - Manage</title>
   <meta content="description" name="Online petty-cash system for APFC Employees">
   <meta content="keywords" name="petty cash, petty-cash, finance">
 
@@ -69,6 +69,7 @@
                   <th>Amount</th>
                   <th>Purpose</th>
                   <th>Status</th>
+                  <th>Action</th>
                 </thead>
                 <tbody>
                 <?php foreach($files as $row): ?>
@@ -93,12 +94,29 @@
                         <span class="badge bg-success">Approved</span>
                       <?php }?>
                     </td>
+                    <td>
+                      <?php if($row['Status']==5){?>
+                        <button type="button" class="btn btn-primary btn-sm settle" value="<?php echo $row['requestID'] ?>"><span class="bi bi-clipboard-check"></span>&nbsp;Settle?</button>
+                      <?php }?>
+                    </td>
                   </tr>
                 <?php endforeach; ?>
                 </tbody>
               </table>
             </div>
             <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="home-tab">
+              <table class="table table-striped datatable" style="font-size:12px;">
+                <thead class="bg-primary text-white">
+                  <th>Date</th>
+                  <th>Fullname</th>
+                  <th>Total Amount</th>
+                  <th>Total Expense</th>
+                  <th>Reimburse</th>
+                  <th>Status</th>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>

@@ -64,14 +64,14 @@
           <div class="card">
             <div class="card-body">
               <br/>
-              <button type="button" class="btn btn-primary btn-sm"><span class="bi bi-plus-circle"></span>&nbsp;Assign User</button>
+              <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#assignModal"><span class="bi bi-plus-circle"></span>&nbsp;Assign User</button>
               <div class="table-responsive">
                 <table class="table table-striped" id="tblassign" style="font-size:12px;"> 
                   <thead>
                     <th>Date</th>
                     <th>Fullname</th>
                     <th>Username</th>
-                    <th>Role</th>
+                    <th>Level</th>
                     <th>Action</th>
                   </thead>
                   <tbody>
@@ -98,7 +98,6 @@
                     <th>Action</th>
                   </thead>
                   <tbody>
-
                   </tbody>
                 </table>
               </div>
@@ -106,7 +105,29 @@
           </div>
         </div>
         <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
-
+          <div class="card">
+            <div class="card-body">
+              <br/>
+              <div class="table-responsive">
+                <table class="table table-striped" id="tbllogs" style="font-size:12px;"> 
+                  <thead>
+                    <th>Date</th>
+                    <th>Fullname</th>
+                    <th>Activity</th>
+                  </thead>
+                  <tbody>
+                  <?php foreach($log as $row):?>
+                    <tr>
+                      <td><?php echo $row->Date ?></td>
+                      <td><?php echo $row->Fullname ?></td>
+                      <td><?php echo $row->Activity ?></td>
+                    </tr>
+                  <?php endforeach; ?>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -169,6 +190,45 @@
       </div>
     </div>
   </div><!-- End Basic Modal-->
+  <!-- assign modal -->
+  <div class="modal fade" id="assignModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">New Assignment</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form method="POST" class="row g-3" id="frmAssign">
+            <?= csrf_field(); ?>
+            <div class="col-lg-12 form-group">
+              <label>Choose user account</label>
+              <select class="form-control" name="user" required>
+                <option value="">Choose</option>
+                <?php foreach($account as $row): ?>
+                <option value="<?php echo $row['accountID'] ?>"><?php echo $row['Fullname'] ?></option>
+                <?php endforeach; ?>
+              </select>
+              <div id="user-error" class="error-message text-danger text-sm"></div>
+            </div>
+            <div class="col-lg-12 form-group">
+              <label>Choose account level</label>
+              <select class="form-control" name="level" required>
+                <option value="">Choose</option>
+                <option>Verifier</option>
+                <option>Pre-Final Approver</option>
+                <option>Final Approver</option>
+              </select>
+              <div id="level-error" class="error-message text-danger text-sm"></div>
+            </div>
+            <div class="col-lg-12 form-group">
+              <button type="submit" class="form-control btn btn-primary">Register</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div><!-- End Basic Modal-->
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
   <!-- Vendor JS Files -->
@@ -186,6 +246,7 @@
   <!-- Template Main JS File -->
   <script src="assets/js/main.js"></script>
   <script>
+    $('#tbllogs').DataTable();
     var tables = $('#tblassign').DataTable({
         "processing": true,
         "serverSide": true,
@@ -264,8 +325,40 @@
             success: function(response) {
                 if (response.success) {
                     $('#frmAccount')[0].reset();
-                    $('#addAccountModal').modal('hide');
+                    $('#assignModal').modal('hide');
                     tblUser.ajax.reload();
+                    Swal.fire({
+                        title: "Great!",
+                        text: "Successfully saved",
+                        icon: "success"
+                    });
+                } else {
+                    var errors = response.error;
+                    // Iterate over each error and display it under the corresponding input field
+                    for (var field in errors) {
+                        $('#' + field + '-error').html('<p>' + errors[field] +
+                            '</p>'); // Show the first error message
+                        $('#' + field).addClass(
+                            'text-danger'); // Highlight the input field with an error
+                    }
+                }
+            }
+        });
+    });
+
+    $('#frmAssign').on('submit', function(e) {
+        e.preventDefault();
+        $('.error-message').html('');
+        let data = $(this).serialize();
+        $.ajax({
+            url: "<?=site_url('save-assign')?>",
+            method: "POST",
+            data: data,
+            success: function(response) {
+                if (response.success) {
+                    $('#frmAssign')[0].reset();
+                    $('#addAccountModal').modal('hide');
+                    tables.ajax.reload();
                     Swal.fire({
                         title: "Great!",
                         text: "Successfully saved",

@@ -53,7 +53,7 @@
           <div class="card bg-primary text-white">
             <div class="card-body">
               <div class="card-title text-white">Pending</div>
-              <h1>0</h1>
+              <h1><?=$pending?></h1>
             </div>
           </div>
         </div>
@@ -61,15 +61,15 @@
           <div class="card bg-primary text-white">
             <div class="card-body">
               <div class="card-title text-white">Approved</div>
-              <h1>0</h1>
+              <h1><?=$approve?></h1>
             </div>
           </div>
         </div>
         <div class="col-lg-3">
           <div class="card bg-primary text-white">
             <div class="card-body">
-              <div class="card-title text-white">Unliquidated</div>
-              <h1>0</h1>
+              <div class="card-title text-white">Total</div>
+              <h1><?=$total?></h1>
             </div>
           </div>
         </div>
@@ -94,9 +94,18 @@
                     <th>Fullname</th>
                     <th>Department</th>
                     <th>Amount</th>
+                    <th>Purpose</th>
                   </thead>
                   <tbody>
-
+                  <?php foreach($files as $row): ?>
+                  <tr>
+                    <td><?php echo $row['Date'] ?></td>
+                    <td><?php echo $row['Fullname'] ?></td>
+                    <td><?php echo $row['Department'] ?></td>
+                    <td><?php echo number_format($row['Amount'],2) ?></td>
+                    <td><?php echo $row['Purpose'] ?></td>
+                  </tr>
+                  <?php endforeach; ?>
                   </tbody>
                 </table>
               </div>

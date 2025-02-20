@@ -77,7 +77,7 @@
                             <div class="col-lg-2">
                                 <div class="form-floating">
                                     <input type="date" class="form-control" name="date" value="<?=date('Y-m-d')?>" required/>
-                                    <label>Date</label>
+                                    <label>Date Needed</label>
                                 </div>
                                 <div class="text-danger"><?=isset($validation)? display_error($validation,'date') : '' ?></div>
                             </div>

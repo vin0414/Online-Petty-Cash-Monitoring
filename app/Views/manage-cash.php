@@ -6,7 +6,7 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>Online Petty Cash - Review</title>
+  <title>Online Petty Cash - Manage Cash</title>
   <meta content="description" name="Online petty-cash system for APFC Employees">
   <meta content="keywords" name="petty cash, petty-cash, finance">
 
@@ -26,7 +26,6 @@
   <link href="assets/vendor/quill/quill.bubble.css" rel="stylesheet">
   <link href="assets/vendor/remixicon/remixicon.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.datatables.net/2.2.1/css/dataTables.dataTables.css" />
-
   <!-- Template Main CSS File -->
   <link href="assets/css/style.css" rel="stylesheet">
 </head>
@@ -48,28 +47,52 @@
       </nav>
     </div><!-- End Page Title -->
     <section class="section dashboard">
-      <div class="card">
-        <div class="card-body">
-          <div class="card-title"><i class="icon-copy bi bi-journal-check"></i>&nbsp;For Review</div>
-          <table class="table table-striped" id="tblreview" style="font-size:12px;">
-            <thead class="bg-primary text-white">
-              <th>Date Received</th>
-              <th>Code</th>
-              <th>Complete Name</th>
-              <th>Department</th>
-              <th>Amount</th>
-              <th>Status</th>
-              <th>Date Approved</th>
-            </thead>
-            <tbody> 
-            </tbody>
-          </table>
+      <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true"><span class="bi bi-download"></span>&nbsp;For Release</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false"><span class="bi bi-stack"></span>&nbsp;Liquidation</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false"><span class="bi bi-hdd-stack"></span>&nbsp;Others</button>
+        </li>
+      </ul> 
+      <div class="tab-content pt-2" id="myTabContent">
+        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+          <div class="card">
+            <div class="card-body">
+              <br/>
+              <div class="table-responsive">
+                <table class="table table-striped" id="tblapprove" style="font-size:12px;"> 
+                  <thead>
+                    <th>Date</th>
+                    <th>Fullname</th>
+                    <th>Department</th>
+                    <th>Amount</th>
+                    <th>Purpose</th>
+                    <th>Release?</th>
+                    <th>When</th>
+                    <th>Action</th>
+                  </thead>
+                  <tbody>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+
+        </div>
+        <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+
         </div>
       </div>
     </section>
 
   </main><!-- End #main -->
- 
+
   <!-- ======= Footer ======= -->
   <footer id="footer" class="footer">
     <div class="copyright">
@@ -86,20 +109,6 @@
 
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
-  <div class="modal fade" id="viewModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header bg-primary text-white">
-          <h5 class="modal-title text-white">PCF Details</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <div id="result"></div>
-        </div>
-      </div>
-    </div>
-  </div><!-- End Basic Modal-->
-
   <!-- Vendor JS Files -->
   <script src="assets/vendor/apexcharts/apexcharts.min.js"></script>
   <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -115,11 +124,11 @@
   <!-- Template Main JS File -->
   <script src="assets/js/main.js"></script>
   <script>
-    var tables = $('#tblreview').DataTable({
+    var tables = $('#tblapprove').DataTable({
         "processing": true,
         "serverSide": true,
         "ajax": {
-            "url": "<?=site_url('for-review')?>",
+            "url": "<?=site_url('approve')?>",
             "type": "GET",
             "dataSrc": function(json) {
                 // Handle the data if needed
@@ -134,10 +143,7 @@
                 "data": "date"
             },
             {
-                "data": "code"
-            },
-            {
-                "data": "requestor"
+                "data": "fullname"
             },
             {
               "data": "department"
@@ -146,78 +152,44 @@
                 "data": "amount"
             },
             {
-              "data" : "status"
+                "data": "purpose"
             },
             {
-                "data": "approve"
+                "data": "release"
+            },
+            {
+                "data": "when"
+            },
+            {
+                "data": "action"
             }
         ]
     });
 
-    $(document).on('click','.view',function(){
-      let val = $(this).val();
-      $.ajax({
-        url:"<?=site_url('view-details')?>",
-        method:"GET",data:{value:val},
-        success:function(response)
-        {
-          $('#viewModal').modal('show');
-          $('#result').html(response);
-        }
-      });
-    });
-
-    $(document).on('click','.accept',function(){
-      var confirmation = confirm("Do you want to accept this request?");
+    $(document).on('click','.tag',function(){
+      let confirmation = confirm("Do you want to tag this as release?");
       if(confirmation)
       {
         $.ajax({
-            url:"<?=site_url('accept')?>",
-            method:"POST",data:{value:$(this).val()},
-            success:function(response)
+          url:"<?=site_url('release')?>",
+          method:"POST",data:{value:$(this).val()},
+          success:function(response)
+          {
+            if(response==="success")
             {
-              if(response==="success")
-              {
-                tables.ajax.reload();
-                $('#viewModal').modal('hide');
-              }
-              else
-              {
-                alert(response);
-              }
+              tables.ajax.reload();
+              Swal.fire({
+                    title: "Great!",
+                    text: "Successfully submitted",
+                    icon: "success"
+                });
             }
-          });
-      }
-    });
-
-    $(document).on('click','.reject',function(){
-      var confirmation = confirm("Do you want to reject this request?");
-      if(confirmation)
-      {
-        var message = prompt("Please leave a comment");
-        if(message)
-        {
-          $.ajax({
-            url:"<?=site_url('reject')?>",
-            method:"POST",data:{value:$(this).val(),message:message},
-            success:function(response)
+            else
             {
-              if(response==="success")
-              {
-                tables.ajax.reload();
-                $('#viewModal').modal('hide');
-              }
-              else
-              {
-                alert(response);
-              }
+              alert(response);
             }
-          });
-        }
-        else
-        {
-          alert("Invalid! Please try again");
-        }
+          }
+        });
       }
     });
   </script>

@@ -14,5 +14,5 @@ class monitorModel extends Model
     protected $returnType     = 'array';
     protected $useSoftDeletes = false;
 
-    protected $allowedFields = ['requestID','DateReceived','DateTagged','Status','accountID'];
+    protected $allowedFields = ['requestID','DateTagged','Status','accountID'];
 }

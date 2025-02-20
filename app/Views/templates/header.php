@@ -25,76 +25,47 @@
         </li><!-- End Search Icon-->
 
         <li class="nav-item dropdown">
-
+          <?php 
+          $user = session()->get('loggedUser');
+          $approveModel = new \App\Models\approveModel();
+          $review = $approveModel->WHERE('accountID',$user)->WHERE('Status',0)->countAllResults();
+          ?> 
           <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
             <i class="bi bi-bell"></i>
-            <span class="badge bg-primary badge-number">4</span>
+            <span class="badge bg-primary badge-number"><?=$review ?></span>
           </a><!-- End Notification Icon -->
 
           <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
             <li class="dropdown-header">
-              You have 4 new notifications
-              <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+              You have <?=$review ?> new notifications
             </li>
             <li>
               <hr class="dropdown-divider">
             </li>
-
-            <li class="notification-item">
-              <i class="bi bi-exclamation-circle text-warning"></i>
-              <div>
-                <h4>Lorem Ipsum</h4>
-                <p>Quae dolorem earum veritatis oditseno</p>
-                <p>30 min. ago</p>
-              </div>
-            </li>
-
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li class="notification-item">
-              <i class="bi bi-x-circle text-danger"></i>
-              <div>
-                <h4>Atque rerum nesciunt</h4>
-                <p>Quae dolorem earum veritatis oditseno</p>
-                <p>1 hr. ago</p>
-              </div>
-            </li>
-
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li class="notification-item">
-              <i class="bi bi-check-circle text-success"></i>
-              <div>
-                <h4>Sit rerum fuga</h4>
-                <p>Quae dolorem earum veritatis oditseno</p>
-                <p>2 hrs. ago</p>
-              </div>
-            </li>
-
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
+            <?php
+              $user = session()->get('loggedUser');
+              $db = db_connect();
+              $builder = $db->table('tblapprove a');
+              $builder->select('a.DateReceived,b.Purpose,b.Amount');
+              $builder->join('tblrequest b','b.requestID=a.requestID','LEFT');
+              $builder->WHERE('a.Status',0)->WHERE('a.accountID',$user);
+              $review = $builder->get()->getResult();
+              foreach($review as $row)
+              {
+              ?>
             <li class="notification-item">
               <i class="bi bi-info-circle text-primary"></i>
               <div>
-                <h4>Dicta reprehenderit</h4>
-                <p>Quae dolorem earum veritatis oditseno</p>
-                <p>4 hrs. ago</p>
+                <h6>Requesting of approval with sum of <?php echo number_format($row->Amount,2) ?> for <?php echo substr($row->Purpose,0,20) ?>..</h6>
+                <p><?php echo date('Y-M-d',strtotime($row->DateReceived)) ?></p>
               </div>
             </li>
-
             <li>
               <hr class="dropdown-divider">
             </li>
-            <li class="dropdown-footer">
-              <a href="#">Show all notifications</a>
-            </li>
-
+            <?php
+              } 
+            ?>
           </ul><!-- End Notification Dropdown Items -->
 
         </li><!-- End Notification Nav -->

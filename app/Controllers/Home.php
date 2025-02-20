@@ -45,8 +45,12 @@ class Home extends BaseController
         $title = "Manage";
         //request
         $user = session()->get('loggedUser');
-        $fileModel = new \App\Models\fileModel();
-        $files = $fileModel->WHERE('accountID',$user)->findAll();
+        $builder = $this->db->table('tblrequest a');
+        $builder->select('a.*,b.DateTagged,b.Status as tag');
+        $builder->join('tblmonitor b','b.requestID=a.requestID','LEFT');
+        $builder->WHERE('a.accountID',$user);
+        $builder->groupBy('a.requestID');
+        $files = $builder->get()->getResult();
         //data
         $data = ['files'=>$files,'title'=>$title];
         return view('manage',$data);
@@ -58,6 +62,14 @@ class Home extends BaseController
         //data
         $data = ['title'=>$title];
         return view('review',$data);
+    }
+
+    public function manageCash()
+    {
+        $title = "Manage Cash";
+        //data
+        $data = ['title'=>$title];
+        return view('manage-cash',$data);
     }
 
     public function configure()
@@ -79,6 +91,14 @@ class Home extends BaseController
             return view('configure',$data);
         }
         return redirect("/dashboard");
+    }
+
+    public function account()
+    {
+        $title = "My Account";
+        //data
+        $data = ['title'=>$title];
+        return view('account',$data);
     }
 
     public function fetchAssign()

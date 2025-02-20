@@ -38,11 +38,13 @@ $routes->get('fetch-assign','Home::fetchAssign');
 $routes->get('fetch-user','Home::fetchUser');
 $routes->get('for-review','FileController::forReview');
 $routes->get('view-details','FileController::viewDetails');
+$routes->get('approve','FileController::approveFile');
 
 $routes->post('save-user','Home::saveUser');
 $routes->post('save-assign','Home::saveAssign');
 $routes->post('accept','FileController::accept');
 $routes->post('reject','FileController::reject');
+$routes->post('release','FileController::release');
 
 $routes->group('',['filter'=>'AlreadyLoggedIn'],function($routes)
 {
@@ -55,8 +57,9 @@ $routes->group('',['filter'=>'AuthCheck'],function($routes)
     $routes->get('new','Home::newRequest');
     $routes->get('manage','Home::manageRequest');
     $routes->get('review','Home::reviewRequest');
-    //configure
+    $routes->get('manage-cash','Home::manageCash');
     $routes->get('configure','Home::configure');
+    $routes->get('account','Home::account');
 });
 
 /*

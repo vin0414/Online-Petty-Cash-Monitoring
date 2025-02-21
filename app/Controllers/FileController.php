@@ -118,9 +118,12 @@ class FileController extends BaseController
         $approveDate = date('Y-m-d');
         $user = session()->get('loggedUser');
         //update the status in approver module
-        $approver = $approveModel->WHERE('accountID',$user)->first();
+        $approver = $approveModel->WHERE('accountID',$user)
+                                ->WHERE('requestID',$val)
+                                ->WHERE('Status',0)
+                                ->first();
         $data = ['DateApproved'=>$approveDate,'Status'=>$status];
-        $approveModel->update($val,$data);
+        $approveModel->update($approver['approveID'],$data);
         //update the request status
         $file = $fileModel->WHERE('requestID',$approver['requestID'])->first();
         switch($file['Status'])
@@ -206,7 +209,7 @@ class FileController extends BaseController
     {
         $val = $this->request->getGet('value');
         $builder = $this->db->table('tblapprove a');
-        $builder->select('a.approveID,a.Status,b.Fullname,b.Department,b.Purpose,b.Amount,b.File');
+        $builder->select('a.approveID,a.Status,b.requestID,b.Fullname,b.Department,b.Purpose,b.Amount,b.File');
         $builder->join('tblrequest b','b.requestID=a.requestID','LEFT');
         $builder->WHERE('a.approveID',$val);
         $data = $builder->get()->getRow();
@@ -240,7 +243,7 @@ class FileController extends BaseController
                 </div>
                 <?php if($data->Status==0){ ?>
                 <div class="col-lg-12">
-                    <button type="button" class="btn btn-primary accept" value="<?php echo $data->approveID ?>">
+                    <button type="button" class="btn btn-primary accept" value="<?php echo $data->requestID ?>">
                         <span class="bi bi-check-circle"></span>&nbsp;Approve
                     </button>
                     <button type="button" class="btn btn-danger reject" value="<?php echo $data->approveID ?>">
@@ -275,6 +278,7 @@ class FileController extends BaseController
         foreach ($request as $row) {
             $response['data'][] = [
                 'date'=>date('Y-M-d', strtotime($row->Date)),
+                'code'=>"PCF-".str_pad($row->requestID, 4, '0', STR_PAD_LEFT),
                 'fullname'=>$row->Fullname,
                 'department'=>$row->Department,
                 'amount'=>number_format($row->Amount,2),
@@ -297,6 +301,70 @@ class FileController extends BaseController
                 'Status'=>1,
                 'accountID'=>session()->get('loggedUser')];
         $monitorModel->save($data);
+        echo "success";
+    }
+
+    public function addItem()
+    {
+        $listModel = new \App\Models\listModel();
+        $fileModel = new \App\Models\fileModel();
+        $validation = $this->validate([
+            'csrf_test_name'=>'required',
+            'date'=>'required',
+            'request'=>'required|is_unique[tbl_list.requestID]',
+            'particulars'=>'required',
+        ]);
+
+        if(!$validation)
+        {
+            return $this->response->SetJSON(['error' => $this->validator->getErrors()]);
+        }
+        else
+        {  
+            $record = $fileModel->WHERE('requestID',$this->request->getPost('request'))->first(); 
+            $data = ['accountID', 
+                    'requestID'=>$this->request->getPost('request'),
+                    'Fullname'=>$record['Fullname'],
+                    'Department'=>$record['Department'],
+                    'Particulars'=>$this->request->getPost('particulars'),
+                    'Amount'=>$record['Amount'],
+                    'Status'=>0,
+                    'Date'=>$this->request->getPost('date'),
+                    'DateCreated'=>date('Y-m-d')];
+            $listModel->save($data);
+            return $this->response->SetJSON(['success' => 'Successfully submitted']);
+        }
+    }
+
+    public function fetchItem()
+    {
+        $listModel = new \App\Models\listModel();
+        $list = $listModel->WHERE('Status',0)->findAll();
+        foreach($list as $row)
+        {
+            ?>
+            <tr>
+                <td><?php echo $row['Date'] ?></td>
+                <td><?php echo $row['Fullname'] ?></td>
+                <td><?php echo $row['Department'] ?></td>
+                <td><?php echo $row['Particulars'] ?></td>
+                <td><?php echo number_format($row['Amount'],2) ?></td>
+                <td>
+                    <button type="button" class="btn btn-primary btn-sm close" value="<?php echo $row['listID'] ?>">
+                        <span class="bi bi-x-square"></span>&nbsp;Close
+                    </button>
+                </td>
+            </tr>
+            <?php
+        }
+    }
+
+    public function closeItem()
+    {
+        $listModel = new \App\Models\listModel();
+        $val = $this->request->getPost('value');
+        $data = ['Status'=>1];
+        $listModel->update($val,$data);
         echo "success";
     }
 }

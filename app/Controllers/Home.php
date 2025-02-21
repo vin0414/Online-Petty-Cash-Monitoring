@@ -24,7 +24,7 @@ class Home extends BaseController
         $pending = $fileModel->WHERE('Status',0)->countAllResults();
         $approve = $fileModel->WHERE('Status',5)->countAllResults();
         $total = $fileModel->countAllResults();
-        $files = $fileModel->findAll();
+        $files = $fileModel->orderBy('requestID', 'DESC')->findAll(10);
 
         $data = ['title'=>$title,'pending'=>$pending,'approve'=>$approve,'total'=>$total,'files'=>$files];
         return view('dashboard',$data);
@@ -67,8 +67,16 @@ class Home extends BaseController
     public function manageCash()
     {
         $title = "Manage Cash";
+        //file
+        $fileModel = new \App\Models\fileModel();
+        $files = $fileModel->WHERE('Status',5)->findAll();
+        //unliquidated
+        $sql = "Select a.* from tblrequest a INNER JOIN tblmonitor c ON c.requestID=a.requestID WHERE a.Status=5 AND c.Status=1
+        AND NOT EXISTS (Select b.requestID from tbl_list b WHERE a.requestID=b.requestID)";
+        $query = $this->db->query($sql);
+        $unsettle = $query->getResult();
         //data
-        $data = ['title'=>$title];
+        $data = ['title'=>$title,'files'=>$files,'unsettle'=>$unsettle];
         return view('manage-cash',$data);
     }
 

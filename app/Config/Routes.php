@@ -39,12 +39,15 @@ $routes->get('fetch-user','Home::fetchUser');
 $routes->get('for-review','FileController::forReview');
 $routes->get('view-details','FileController::viewDetails');
 $routes->get('approve','FileController::approveFile');
+$routes->get('fetch-item','FileController::fetchItem');
 
 $routes->post('save-user','Home::saveUser');
 $routes->post('save-assign','Home::saveAssign');
 $routes->post('accept','FileController::accept');
 $routes->post('reject','FileController::reject');
 $routes->post('release','FileController::release');
+$routes->post('add-item','FileController::addItem');
+$routes->post('close-item','FileController::closeItem');
 
 $routes->group('',['filter'=>'AlreadyLoggedIn'],function($routes)
 {

@@ -52,7 +52,7 @@
           <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true"><span class="bi bi-download"></span>&nbsp;For Release</button>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false"><span class="bi bi-stack"></span>&nbsp;Liquidation</button>
+          <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false"><span class="bi bi-stack"></span>&nbsp;For Replenish</button>
         </li>
         <li class="nav-item" role="presentation">
           <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false"><span class="bi bi-hdd-stack"></span>&nbsp;Others</button>
@@ -62,11 +62,12 @@
         <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
           <div class="card">
             <div class="card-body">
-              <br/>
+              <h6 class="card-title">For Release - Petty Cash</h6>
               <div class="table-responsive">
                 <table class="table table-striped" id="tblapprove" style="font-size:12px;"> 
                   <thead>
                     <th>Date</th>
+                    <th>PCF No</th>
                     <th>Fullname</th>
                     <th>Department</th>
                     <th>Amount</th>
@@ -83,7 +84,55 @@
           </div>
         </div>
         <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-
+          <div class="row">
+            <div class="col-lg-9">
+              <div class="card">
+                <div class="card-body">
+                  <h6 class="card-title">Liquidated/Settled
+                    <button type="button" class="btn btn-primary btn-sm add" style="float:right;"  data-bs-toggle="modal" data-bs-target="#replenishModal"><span class="bi bi-plus-circle"></span>&nbsp;Add</button>
+                  </h6>
+                  <div class="table-responsive">
+                    <table class="table table-striped" style="font-size:12px;"> 
+                      <thead>
+                        <th>Date</th>
+                        <th>Fullname</th>
+                        <th>Department</th>
+                        <th>Particulars</th>
+                        <th>Amount</th>
+                        <th>Action</th>
+                      </thead>
+                      <tbody id="tblresult">
+                        <tr>
+                          <td colspan="6" class="text-center">No Record(s)</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-3">
+              <div class="card">
+                <div class="card-body">
+                  <h6 class="card-title">Unliquidated</h6>
+                  <div class="list-group">
+                    <?php if(empty($unsettle)){ ?>
+                      <a href="#" class="list-group-item list-group-item-action" aria-current="true">
+                        <p class="mb-1">No Record(s)</p>
+                      </a>
+                    <?php }else { ?>
+                    <?php foreach($unsettle as $row): ?>
+                      <a href="#" class="list-group-item list-group-item-action" aria-current="true">
+                        <p class="mb-1"><?php echo $row->Fullname ?></p>
+                        <small><?php echo number_format($row->Amount,2) ?></small>
+                      </a>
+                    <?php endforeach; ?>
+                    <?php } ?>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
 
@@ -106,7 +155,44 @@
       Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
     </div>
   </footer><!-- End Footer -->
-
+  <div class="modal fade" id="replenishModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Replenishment Form</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form method="POST" class="row g-3" id="form1">
+            <?= csrf_field(); ?>
+            <div class="col-lg-12">
+              <label>Date</label>
+              <input type="date" class="form-control" name="date" required/>
+              <div id="date-error" class="error-message text-danger text-sm"></div>
+            </div>
+            <div class="col-lg-12">
+              <label>PCF Number</label>
+              <select class="form-control" name="request" required>
+                <option value="">Choose</option>
+                <?php foreach($files as $row): ?>
+                <option value="<?php echo $row['requestID'] ?>"><?php echo "PCF-".str_pad($row['requestID'], 4, '0', STR_PAD_LEFT) ?></option>
+                <?php endforeach; ?>
+              </select>
+              <div id="request-error" class="error-message text-danger text-sm"></div>
+            </div>
+            <div class="col-lg-12">
+              <label>Particulars</label>
+              <textarea name="particulars" class="form-control" required></textarea>
+              <div id="particulars-error" class="error-message text-danger text-sm"></div>
+            </div>
+            <div class="col-lg-12">
+              <button type="submit" class="form-control btn btn-primary">Submit</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div><!-- End Basic Modal-->
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
   <!-- Vendor JS Files -->
@@ -124,6 +210,81 @@
   <!-- Template Main JS File -->
   <script src="assets/js/main.js"></script>
   <script>
+    $(document).ready(function(){
+      fetch();
+    });
+    $('#form1').on('submit',function(e){
+      e.preventDefault();
+      let data = $(this).serialize();
+      $.ajax({
+          url: "<?=site_url('add-item')?>",
+          method: "POST",
+          data: data,
+          success: function(response) 
+          {
+            if (response.success) {
+                $('#form1')[0].reset();
+                $('#replenishModal').modal('hide');
+                fetch();
+                Swal.fire({
+                    title: "Great!",
+                    text: "Successfully saved",
+                    icon: "success"
+                });
+            } else {
+                var errors = response.error;
+                // Iterate over each error and display it under the corresponding input field
+                for (var field in errors) {
+                    $('#' + field + '-error').html('<p>' + errors[field] +
+                        '</p>'); // Show the first error message
+                    $('#' + field).addClass(
+                        'text-danger'); // Highlight the input field with an error
+                }
+            }
+          }
+        });
+    });
+
+    $(document).on('click','.close',function(){
+      let confirmation = confirm('Do you want to tag this as replenished?');
+      if(confirmation)
+      {
+        $.ajax({
+          url:"<?=site_url('close-item')?>",
+          method:"POST",data:{value:$(this).val()},
+          success:function(response)
+          {
+            if(response==="success"){
+              fetch();
+            }
+            else
+            {
+              alert(response);
+            }
+          }
+        });
+      }
+    });
+
+    function fetch()
+    {
+      $('#tblresult').html("<tr><td colspan='6' class='text-center'>Loading...</td></tr>");
+      $.ajax({
+        url:"<?=site_url('fetch-item')?>",
+        method:"GET",
+        success:function(response)
+        {
+          if(response==="")
+          {
+            $('#tblresult').html("<tr><td colspan='6' class='text-center'>No Record(s)</td></tr>");
+          }
+          else
+          {
+            $('#tblresult').html(response);
+          }
+        }
+      });
+    }
     var tables = $('#tblapprove').DataTable({
         "processing": true,
         "serverSide": true,
@@ -143,7 +304,10 @@
                 "data": "date"
             },
             {
-                "data": "fullname"
+              "data":"code"
+            },
+            {
+               "data": "fullname"
             },
             {
               "data": "department"

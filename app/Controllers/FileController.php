@@ -73,6 +73,7 @@ class FileController extends BaseController
     public function forReview()
     {
         $approveModel = new \App\Models\approveModel();
+        $searchTerm = $_GET['search']['value'] ?? '';
         $totalRecords = $approveModel->countAllResults();
         //request
         $builder = $this->db->table('tblapprove a');
@@ -80,12 +81,24 @@ class FileController extends BaseController
         $builder->join('tblrequest b','b.requestID=a.requestID','LEFT');
         $builder->WHERE('a.accountID',session()->get('loggedUser'));
         $builder->groupBy('a.approveID');
+        if ($searchTerm) {
+            // Add a LIKE condition to filter based on school name or address or any other column you wish to search
+            $builder->groupStart()
+                    ->like('a.DateReceived', $searchTerm)
+                    ->orLike('a.DateApproved', $searchTerm)
+                    ->orLike('b.requestID', $searchTerm)
+                    ->orLike('b.Fullname', $searchTerm)
+                    ->orLike('b.Department', $searchTerm)
+                    ->orLike('b.Amount', $searchTerm)
+                    ->orLike('b.Purpose', $searchTerm)
+                    ->groupEnd();
+        }
         $request = $builder->get()->getResult();
 
         $response = [
             "draw" => $_GET['draw'],
             "recordsTotal" => $totalRecords,
-            "recordsFiltered" => $totalRecords,
+            "recordsFiltered" => count($request),
             'data' => [] 
         ];
 
@@ -259,6 +272,7 @@ class FileController extends BaseController
     public function approveFile()
     {
         $fileModel = new \App\Models\fileModel();
+        $searchTerm = $_GET['search']['value'] ?? '';
         $totalRecords = $fileModel->WHERE('Status',5)->countAllResults();
         //request
         $builder = $this->db->table('tblrequest a');
@@ -266,12 +280,22 @@ class FileController extends BaseController
         $builder->join('tblmonitor b','b.requestID=a.requestID','LEFT');
         $builder->WHERE('a.Status',5);
         $builder->groupBy('a.requestID');
+        if ($searchTerm) {
+            // Add a LIKE condition to filter based on school name or address or any other column you wish to search
+            $builder->groupStart()
+                    ->like('a.requestID', $searchTerm)
+                    ->like('a.Fullname', $searchTerm)
+                    ->orLike('a.Department', $searchTerm)
+                    ->orLike('a.Purpose', $searchTerm)
+                    ->orLike('a.Amount', $searchTerm)
+                    ->groupEnd();
+        }
         $request = $builder->get()->getResult();
 
         $response = [
             "draw" => $_GET['draw'],
             "recordsTotal" => $totalRecords,
-            "recordsFiltered" => $totalRecords,
+            "recordsFiltered" => count($request),
             'data' => [] 
         ];
 
@@ -366,5 +390,56 @@ class FileController extends BaseController
         $data = ['Status'=>1];
         $listModel->update($val,$data);
         echo "success";
+    }
+
+    public function unSettle()
+    {
+        $sql = "Select a.* from tblrequest a INNER JOIN tblmonitor c ON c.requestID=a.requestID WHERE a.Status=5 AND c.Status=1
+        AND NOT EXISTS (Select b.requestID from tbl_list b WHERE a.requestID=b.requestID)";
+        $query = $this->db->query($sql);
+        $unsettle = $query->getResult();
+        foreach($unsettle as $row)
+        {
+        ?>
+        <a href="#" class="list-group-item list-group-item-action" aria-current="true">
+            <p class="mb-1"><?php echo $row->Fullname ?></p>
+            <small><?php echo number_format($row->Amount,2) ?></small>
+        </a>
+        <?php
+        }
+    }
+
+    public function addAmount()
+    {
+        $balanceModel = new \App\Models\balanceModel();
+        $cash = $this->request->getPost('amount');
+        $amt = trim(str_replace(',', '', $cash));
+        $validation = $this->validate(['amount'=>'required']);
+        if(!$validation)
+        {
+            return $this->response->SetJSON(['error' => $this->validator->getErrors()]);
+        }
+        else
+        {
+            $balance = $balanceModel->first();
+            if(empty($balance))
+            {
+                //save
+                $data = ['Date'=>date('Y-m-d'), 'BeginBal'=>$amt,'NewAmount'=>0,'NewBal'=>$amt];
+                $balanceModel->save($data);
+            }
+            else
+            {
+                $builder = $this->db->table('tblbalance');
+                $builder->select('NewBal');
+                $builder->orderBy('balanceID','DESC')->limit(1);
+                $record = $builder->get()->getRow();
+                //add with new amount
+                $newAmt = $record->NewBal + $amt;
+                $data = ['Date'=>date('Y-m-d'), 'BeginBal'=>$record->NewBal,'NewAmount'=>$amt,'NewBal'=>$newAmt];
+                $balanceModel->save($data);
+            }
+            return $this->response->SetJSON(['success' => 'Successfully submitted']);
+        }
     }
 }

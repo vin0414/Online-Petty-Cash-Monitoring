@@ -33,14 +33,15 @@ $routes->post('auth','AuthController::auth');
 $routes->get('/logout','AuthController::logout');
 //functions
 $routes->post('save','FileController::save');
-//ajax code
+//get
 $routes->get('fetch-assign','Home::fetchAssign');
 $routes->get('fetch-user','Home::fetchUser');
 $routes->get('for-review','FileController::forReview');
 $routes->get('view-details','FileController::viewDetails');
 $routes->get('approve','FileController::approveFile');
 $routes->get('fetch-item','FileController::fetchItem');
-
+$routes->get('unsettle','FileController::unSettle');
+//post
 $routes->post('save-user','Home::saveUser');
 $routes->post('save-assign','Home::saveAssign');
 $routes->post('accept','FileController::accept');
@@ -48,6 +49,13 @@ $routes->post('reject','FileController::reject');
 $routes->post('release','FileController::release');
 $routes->post('add-item','FileController::addItem');
 $routes->post('close-item','FileController::closeItem');
+$routes->post('add-amount','FileController::addAmount');
+//compute
+$routes->get('unsettle-balance','Compute::unsettle');
+$routes->get('settle-balance','Compute::settle');
+$routes->get('unliquidated','Compute::unliquidated');
+$routes->get('cash-on-hand','Compute::cashOnHand');
+$routes->get('total-amount','Compute::total');
 
 $routes->group('',['filter'=>'AlreadyLoggedIn'],function($routes)
 {

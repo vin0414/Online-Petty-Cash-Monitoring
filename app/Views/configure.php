@@ -262,6 +262,7 @@
                 alert("Error occurred while loading data.");
             }
         },
+        "searching":true,
         "columns": [{
                 "data": "date"
             },
@@ -294,6 +295,7 @@
                 alert("Error occurred while loading data.");
             }
         },
+        "searching":true,
         "columns": [{
                 "data": "date"
             },

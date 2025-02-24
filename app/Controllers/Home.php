@@ -70,13 +70,11 @@ class Home extends BaseController
         //file
         $fileModel = new \App\Models\fileModel();
         $files = $fileModel->WHERE('Status',5)->findAll();
-        //unliquidated
-        $sql = "Select a.* from tblrequest a INNER JOIN tblmonitor c ON c.requestID=a.requestID WHERE a.Status=5 AND c.Status=1
-        AND NOT EXISTS (Select b.requestID from tbl_list b WHERE a.requestID=b.requestID)";
-        $query = $this->db->query($sql);
-        $unsettle = $query->getResult();
+        //balance
+        $balanceModel = new \App\Models\balanceModel();
+        $balance = $balanceModel->findAll();
         //data
-        $data = ['title'=>$title,'files'=>$files,'unsettle'=>$unsettle];
+        $data = ['title'=>$title,'files'=>$files,'balance'=>$balance];
         return view('manage-cash',$data);
     }
 
@@ -112,11 +110,22 @@ class Home extends BaseController
     public function fetchAssign()
     {
         $assignModel = new \App\Models\assignModel();
+        $searchTerm = $_GET['search']['value'] ?? '';
         //assigned
         $builder = $this->db->table('tblassign a');
         $builder->select('a.assignID,a.DateCreated,a.Role,b.Fullname,b.Username');
         $builder->join('tblaccount b','b.accountID=a.accountID','LEFT');
+        $builder->WHERE('a.accountID<>',0);
         $builder->groupBy('a.assignID');
+        if ($searchTerm) {
+            // Add a LIKE condition to filter based on school name or address or any other column you wish to search
+            $builder->groupStart()
+                    ->like('a.DateCreated', $searchTerm)
+                    ->orLike('a.Role', $searchTerm)
+                    ->orLike('b.Fullname', $searchTerm)
+                    ->orLike('b.Username', $searchTerm)
+                    ->groupEnd();
+        }
         $records = $builder->get()->getResult();
 
         $totalRecords = $assignModel->countAllResults();
@@ -124,7 +133,7 @@ class Home extends BaseController
         $response = [
             "draw" => $_GET['draw'],
             "recordsTotal" => $totalRecords,
-            "recordsFiltered" => $totalRecords,
+            "recordsFiltered" => count($records),
             'data' => [] 
         ];
         foreach ($records as $row) {
@@ -133,7 +142,7 @@ class Home extends BaseController
                 'fullname' => htmlspecialchars($row->Fullname, ENT_QUOTES),
                 'username' => htmlspecialchars($row->Username, ENT_QUOTES),
                 'role' => htmlspecialchars($row->Role, ENT_QUOTES),
-                'action' => '<button class="btn btn-primary btn-sm view" value="' . htmlspecialchars($row->assignID, ENT_QUOTES) . '"><i class="bi bi-pencil-square"></i>&nbsp;Edit</button>'
+                'action' => '<button class="btn btn-primary btn-sm delete" value="' . htmlspecialchars($row->assignID, ENT_QUOTES) . '"><i class="bi bi-x-square"></i>&nbsp;Remove</button>'
             ];
         }
         // Return the response as JSON
@@ -143,15 +152,21 @@ class Home extends BaseController
     public function fetchUser()
     {
         $accountModel = new \App\Models\accountModel();
+        $searchTerm = $_GET['search']['value'] ?? '';
+        if ($searchTerm) {
+            $accountModel->like('Fullname', $searchTerm)
+                        ->orLike('Username',$searchTerm)
+                        ->orLike('Role',$searchTerm);
+        }
         //account
-        $account = $accountModel->findAll();        
+        $account = $accountModel->WHERE('accountID<>',0)->findAll();        
 
         $totalRecords = $accountModel->countAllResults();
 
         $response = [
             "draw" => $_GET['draw'],
             "recordsTotal" => $totalRecords,
-            "recordsFiltered" => $totalRecords,
+            "recordsFiltered" => count($account),
             'data' => [] 
         ];
         foreach ($account as $row) {
@@ -162,7 +177,7 @@ class Home extends BaseController
                 'role' => htmlspecialchars($row['Role'], ENT_QUOTES),
                 'status' => ($row['Status'] == 0) ? '<span class="badge bg-danger">Inactive</span>' : 
                 '<span class="badge bg-success">Active</span>',
-                'action' => '<button type="button" class="btn btn-primary btn-sm edit" value="' . htmlspecialchars($row['accountID'], ENT_QUOTES) . '"><i class="bi bi-pencil-square"></i>&nbsp;Edit</button>'
+                'action' => '<button type="button" class="btn btn-primary btn-sm remove" value="' . htmlspecialchars($row['accountID'], ENT_QUOTES) . '"><i class="bi bi-x-square"></i>&nbsp;Remove</button>'
             ];
         }
         // Return the response as JSON

@@ -61,12 +61,6 @@
       <?php } ?>
       <li class="nav-heading">Account</li>
       <li class="nav-item">
-        <a class="nav-link <?= ($title == 'My Account') ? '' : 'collapsed' ?>" href="<?=site_url('account')?>">
-          <i class="icon-copy bi bi-person"></i>
-          <span>My Account</span>
-        </a>
-      </li>
-      <li class="nav-item">
         <a class="nav-link collapsed" href="<?=site_url('logout')?>">
           <i class="icon-copy bi bi-power"></i>
           <span>Sign out</span>

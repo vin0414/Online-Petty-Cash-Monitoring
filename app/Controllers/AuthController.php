@@ -81,11 +81,11 @@ class AuthController extends BaseController
         }
         else
         {
-            $check_password = Hash::check($password, $user_info['password']);
+            $check_password = Hash::check($password, $user_info['Password']);
             if(!$check_password || empty($check_password))
             {
                 session()->setFlashdata('fail','Invalid Username or Password!');
-                return redirect()->to('/auth')->withInput();
+                return redirect()->to('/')->withInput();
             }
             else
             {

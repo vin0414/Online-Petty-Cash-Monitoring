@@ -56,7 +56,7 @@
                         <?= session()->getFlashdata('success'); ?>
                     </div>
                 <?php endif; ?>
-                <form method="POST" action="<?=site_url('save')?>" enctype="multipart/form-data" class="row g-3" id="frmRequest">
+                <form method="POST" autocomplete="OFF" action="<?=site_url('save')?>" enctype="multipart/form-data" class="row g-3" id="frmRequest">
                     <?= csrf_field(); ?>
                     <div class="col-12">
                         <div class="row g-3">

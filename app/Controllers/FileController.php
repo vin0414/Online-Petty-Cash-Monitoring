@@ -325,6 +325,7 @@ class FileController extends BaseController
                 'Status'=>1,
                 'accountID'=>session()->get('loggedUser')];
         $monitorModel->save($data);
+        //auto deduct the amount to the cash on hand
         echo "success";
     }
 

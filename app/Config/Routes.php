@@ -31,7 +31,7 @@ $routes->set404Override();
 // route since we don't have to scan directories.
 $routes->post('auth','AuthController::auth');
 $routes->get('/logout','AuthController::logout');
-$routes->post('auto-login/(:any)','AuthController::autoLogin/$1');
+$routes->get('/auto-login/(:any)','AuthController::autoLogin/$1');
 //functions
 $routes->post('save','FileController::save');
 //get

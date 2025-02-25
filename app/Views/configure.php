@@ -6,7 +6,7 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>Online Petty Cash - Dashboard</title>
+  <title>Online Petty Cash - System Configuration</title>
   <meta content="description" name="Online petty-cash system for APFC Employees">
   <meta content="keywords" name="petty cash, petty-cash, finance">
 
@@ -378,6 +378,66 @@
                 }
             }
         });
+    });
+    $(document).on('click','.delete',function(){
+      let confirmation = confirm("Do you want to remove the assigned user?");
+      if(confirmation)
+      {
+        $.ajax({
+          url:"<?=site_url('remove-assignment')?>",
+          method:"POST",data:{value:$(this).val()},
+          success:function(response)
+          {
+            if(response.success)
+            {
+              tables.ajax.reload();
+              Swal.fire({
+                    title: "Great!",
+                    text: "Successfully removed",
+                    icon: "success"
+                });
+            }
+            else
+            {
+              Swal.fire({
+                        title: "Warning",
+                        text: response,
+                        icon: "warning"
+                    });
+            }
+          }
+        });
+      }
+    });
+    $(document).on('click','.remove',function(){
+      let confirmation = confirm("Do you want to remove the selected user account?");
+      if(confirmation)
+      {
+        $.ajax({
+          url:"<?=site_url('remove-user')?>",
+          method:"POST",data:{value:$(this).val()},
+          success:function(response)
+          {
+            if(response.success)
+            {
+              tblUser.ajax.reload();
+              Swal.fire({
+                    title: "Great!",
+                    text: "Successfully removed",
+                    icon: "success"
+                });
+            }
+            else
+            {
+              Swal.fire({
+                        title: "Warning",
+                        text: response,
+                        icon: "warning"
+                    });
+            }
+          }
+        });
+      }
     });
   </script>
 </body>

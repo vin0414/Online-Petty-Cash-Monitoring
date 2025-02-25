@@ -91,7 +91,7 @@ class Home extends BaseController
             $log = $builder->get()->getResult();
             //accounts
             $accountModel = new \App\Models\accountModel();
-            $account = $accountModel->findAll();
+            $account = $accountModel->WHERE('Status',1)->findAll();
             //data
             $data = ['title'=>$title,'log'=>$log,'account'=>$account];
             return view('configure',$data);
@@ -177,7 +177,7 @@ class Home extends BaseController
                 'role' => htmlspecialchars($row['Role'], ENT_QUOTES),
                 'status' => ($row['Status'] == 0) ? '<span class="badge bg-danger">Inactive</span>' : 
                 '<span class="badge bg-success">Active</span>',
-                'action' => '<button type="button" class="btn btn-primary btn-sm remove" value="' . htmlspecialchars($row['accountID'], ENT_QUOTES) . '"><i class="bi bi-x-square"></i>&nbsp;Remove</button>'
+                'action' =>($row['Status'] == 1) ?'<button type="button" class="btn btn-primary btn-sm remove" value="' . htmlspecialchars($row['accountID'], ENT_QUOTES) . '"><i class="bi bi-x-square"></i>&nbsp;Remove</button>':''
             ];
         }
         // Return the response as JSON
@@ -245,5 +245,35 @@ class Home extends BaseController
             $logModel->save($data);
             return $this->response->SetJSON(['success' => 'Successfully submitted']);
         }
+    }
+
+    public function removeAssignment()
+    {
+        $assignModel = new \App\Models\assignModel();
+        $val = $this->request->getPost('value');
+        $data = ['accountID'=>0,'Role'=>'N/A'];
+        $assignModel->update($val,$data);
+
+        date_default_timezone_set('Asia/Manila');
+        $logModel = new \App\Models\logModel();
+        //create log
+        $data = ['Date'=>date('Y-m-d H:i:s a'),'Activity'=>'Remove the assigned user account','accountID'=>session()->get('loggedUser')];
+        $logModel->save($data);
+        return $this->response->SetJSON(['success' => 'Successfully submitted']);
+    }
+
+    public function removeUser()
+    {
+        $accountModel = new \App\Models\accountModel();
+        $val = $this->request->getPost('value');
+        $data = ['Status'=>0];
+        $accountModel->update($val,$data);
+        
+        date_default_timezone_set('Asia/Manila');
+        $logModel = new \App\Models\logModel();
+        //create log
+        $data = ['Date'=>date('Y-m-d H:i:s a'),'Activity'=>'Removed new user account','accountID'=>session()->get('loggedUser')];
+        $logModel->save($data);
+        return $this->response->SetJSON(['success' => 'Successfully submitted']);
     }
 }

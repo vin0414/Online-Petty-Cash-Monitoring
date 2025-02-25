@@ -172,14 +172,14 @@
                 <table class="table table-striped" id="tblcash" style="font-size:12px;">
                   <thead>
                     <th>Date</th>
-                    <th>Begin Balance</th>
+                    <th>Beginning Balance</th>
                     <th>New Amount</th>
                     <th>New Balance</th>
                   </thead>
                   <tbody>
                   <?php foreach($balance as $row): ?>
                   <tr>
-                    <td><?php echo $row['Date'] ?></td>
+                    <td><?php echo date('Y-M-d',strtotime($row['Date'])) ?></td>
                     <td><?php echo number_format($row['BeginBal'],2) ?></td>
                     <td><?php echo number_format($row['NewAmount'],2) ?></td>
                     <td><?php echo number_format($row['NewBal'],2) ?></td>
@@ -357,6 +357,7 @@
           success: function(response) 
           {
             if (response.success) {
+              console.log(response);
                 $('#form1')[0].reset();
                 $('#replenishModal').modal('hide');
                 fetch();

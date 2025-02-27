@@ -8,7 +8,7 @@ class Home extends BaseController
     private $db;
     public function __construct()
     {
-        helper(['form']);
+        helper(['form','text']);
         $this->db = db_connect();
     }
     public function index()
@@ -35,8 +35,11 @@ class Home extends BaseController
         $title = "New PCF";
         $accountModel = new \App\Models\accountModel();
         $account = $accountModel->WHERE('Role','Department Head')->findAll();
+        //department
+        $departmentModel = new \App\Models\departmentModel();
+        $department = $departmentModel->findAll();
 
-        $data = ['title'=>$title,'account'=>$account];
+        $data = ['title'=>$title,'account'=>$account,'department'=>$department];
         return view('new',$data);
     }
 
@@ -275,5 +278,65 @@ class Home extends BaseController
         $data = ['Date'=>date('Y-m-d H:i:s a'),'Activity'=>'Removed new user account','accountID'=>session()->get('loggedUser')];
         $logModel->save($data);
         return $this->response->SetJSON(['success' => 'Successfully submitted']);
+    }
+
+    public function saveDepartment()
+    {
+        $departmentModel = new \App\Models\departmentModel();
+        $validation = $this->validate([
+            'csrf_test_name'=>'required',
+            'department_name'=>'required|is_unique[tbldepartment.departmentName]',
+        ]);
+
+        if(!$validation)
+        {
+            return $this->response->SetJSON(['error' => $this->validator->getErrors()]);
+        }
+        else
+        {
+            $token_code = random_string('alnum',64);
+            $data = ['departmentName'=>$this->request->getPost('department_name'),
+                    'token'=>$token_code,
+                    'DateCreated'=>date('Y-m-d')];
+            $departmentModel->save($data);
+
+            date_default_timezone_set('Asia/Manila');
+            $logModel = new \App\Models\logModel();
+            //create log
+            $data = ['Date'=>date('Y-m-d H:i:s a'),'Activity'=>'Added new department','accountID'=>session()->get('loggedUser')];
+            $logModel->save($data);
+            return $this->response->SetJSON(['success' => 'Successfully submitted']);
+        }
+    }
+
+    public function fetchDepartment()
+    {
+        $departmentModel = new \App\Models\departmentModel();
+        $searchTerm = $_GET['search']['value'] ?? '';
+        if ($searchTerm) {
+            $departmentModel->like('departmentID', $searchTerm)
+                        ->orLike('departmentName',$searchTerm)
+                        ->orLike('DateCreated',$searchTerm);
+        }
+        //account
+        $department = $departmentModel->findAll();        
+
+        $totalRecords = $departmentModel->countAllResults();
+
+        $response = [
+            "draw" => $_GET['draw'],
+            "recordsTotal" => $totalRecords,
+            "recordsFiltered" => count($department),
+            'data' => [] 
+        ];
+        foreach ($department as $row) {
+            $response['data'][] = [
+                'id' => $row['departmentID'],
+                'department' => htmlspecialchars($row['departmentName'], ENT_QUOTES),
+                'date' => date('Y-M-d',strtotime($row['DateCreated']))
+            ];
+        }
+        // Return the response as JSON
+        return $this->response->setJSON($response);
     }
 }

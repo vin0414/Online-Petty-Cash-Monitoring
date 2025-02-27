@@ -37,6 +37,7 @@ $routes->post('save','FileController::save');
 //get
 $routes->get('fetch-assign','Home::fetchAssign');
 $routes->get('fetch-user','Home::fetchUser');
+$routes->get('fetch-department','Home::fetchDepartment');
 $routes->get('for-review','FileController::forReview');
 $routes->get('view-details','FileController::viewDetails');
 $routes->get('approve','FileController::approveFile');
@@ -45,6 +46,7 @@ $routes->get('unsettle','FileController::unSettle');
 //post
 $routes->post('save-user','Home::saveUser');
 $routes->post('save-assign','Home::saveAssign');
+$routes->post('save-department','Home::saveDepartment');
 $routes->post('remove-assignment','Home::removeAssignment');
 $routes->post('remove-user','Home::removeUser');
 $routes->post('accept','FileController::accept');

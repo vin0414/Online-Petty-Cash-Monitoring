@@ -69,7 +69,12 @@
                             </div>
                             <div class="col-lg-3">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control" name="department" value="<?=set_value('department')?>" required/>
+                                    <select class="form-control" name="department" required>
+                                        <option value="">Choose</option>
+                                        <?php foreach($department as $row): ?>
+                                            <option><?php echo $row['departmentName'] ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
                                     <label>Department</label>
                                 </div>
                                 <div class="text-danger"><?=isset($validation)? display_error($validation,'department') : '' ?></div>

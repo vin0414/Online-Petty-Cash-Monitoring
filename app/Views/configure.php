@@ -56,6 +56,9 @@
           <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false"><span class="bi bi-shield-exclamation"></span>&nbsp;Access</button>
         </li>
         <li class="nav-item" role="presentation">
+          <button class="nav-link" id="department-tab" data-bs-toggle="tab" data-bs-target="#department" type="button" role="tab" aria-controls="profile" aria-selected="false"><span class="bx bx-building-house"></span>&nbsp;Department</button>
+        </li>
+        <li class="nav-item" role="presentation">
           <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false"><span class="bi bi-server"></span>&nbsp;System Logs</button>
         </li>
       </ul>
@@ -102,6 +105,45 @@
                 </table>
               </div>
             </div>
+          </div>
+        </div>
+        <div class="tab-pane fade" id="department" role="tabpanel" aria-labelledby="department-tab">
+          <div class="row g-3">
+            <div class="col-lg-8">
+              <div class="card">
+                <d class="card-body">
+                  <div class="card-title">Department</div>
+                  <div class="table-responsive">
+                    <table class="table table-striped" id="tbldepartment" style="font-size:12px;"> 
+                      <thead>
+                        <th>#</th>
+                        <th>Department Name</th>
+                        <th>Date Created</th>
+                      </thead>
+                      <tbody></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card">
+                  <for class="card-body">
+                    <div class="card-title">New Entry</div>
+                    <form class="row g-3" method="POST" id="frmDepartment">
+                      <?= csrf_field(); ?>
+                      <div class="col-lg-12">
+                        <label>New Department</label>
+                        <input type="text" class="form-control" name="department_name" required/>
+                        <div id="department_name-error" class="error-message text-danger text-sm"></div>
+                      </div>
+                      <div class="col-lg-12">
+                        <button type="submit" class="btn btn-primary form-control">Add Entry</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>           
           </div>
         </div>
         <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
@@ -247,6 +289,64 @@
   <script src="assets/js/main.js"></script>
   <script>
     $('#tbllogs').DataTable();
+    var department = $('#tbldepartment').DataTable({
+        "processing": true,
+        "serverSide": true,
+        "ajax": {
+            "url": "<?=site_url('fetch-department')?>",
+            "type": "GET",
+            "dataSrc": function(json) {
+                // Handle the data if needed
+                return json.data;
+            },
+            "error": function(xhr, error, code) {
+                console.error("AJAX Error: " + error);
+                alert("Error occurred while loading data.");
+            }
+        },
+        "searching":true,
+        "columns": [{
+                "data": "id"
+            },
+            {
+                "data": "department"
+            },
+            {
+                "data": "date"
+            }
+        ]
+    });
+
+    $('#frmDepartment').on('submit',function(e){
+      e.preventDefault();
+      let data = $(this).serialize();
+      $.ajax({
+            url: "<?=site_url('save-department')?>",
+            method: "POST",
+            data: data,
+            success: function(response) {
+                if (response.success) {
+                    $('#frmDepartment')[0].reset();
+                    department.ajax.reload();
+                    Swal.fire({
+                        title: "Great!",
+                        text: "Successfully saved",
+                        icon: "success"
+                    });
+                } else {
+                    var errors = response.error;
+                    // Iterate over each error and display it under the corresponding input field
+                    for (var field in errors) {
+                        $('#' + field + '-error').html('<p>' + errors[field] +
+                            '</p>'); // Show the first error message
+                        $('#' + field).addClass(
+                            'text-danger'); // Highlight the input field with an error
+                    }
+                }
+            }
+        });
+    });
+
     var tables = $('#tblassign').DataTable({
         "processing": true,
         "serverSide": true,

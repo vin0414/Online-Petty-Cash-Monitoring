@@ -319,6 +319,7 @@ class FileController extends BaseController
     public function release()
     {
         $monitorModel = new \App\Models\monitorModel();
+        $balanceModel = new \App\Models\balanceModel();
         $val = $this->request->getPost('value');
         $data = ['requestID'=>$val,
                 'DateTagged'=>date('Y-m-d'),
@@ -326,6 +327,23 @@ class FileController extends BaseController
                 'accountID'=>session()->get('loggedUser')];
         $monitorModel->save($data);
         //auto deduct the amount to the cash on hand
+        $builder = $this->db->table('tblbalance');
+        $builder->select('NewBal');
+        $builder->orderBy('balanceID','DESC')->limit(1);
+        $balance = $builder->get()->getRow();
+        if($balance)
+        {
+            //get the approved amount
+            $fileModel = new \App\Models\fileModel();
+            $request = $fileModel->WHERE('requestID',$val)->first();
+            //compute the new balance
+            $newBalance = $balance->NewBal-$request['Amount'];
+            $data = ['Date'=>date('Y-m-d'), 
+                    'BeginBal'=>$balance->NewBal,
+                    'NewAmount'=>-$request['Amount'],
+                    'NewBal'=>$newBalance];
+            $balanceModel->save($data);
+        }
         echo "success";
     }
 
@@ -347,7 +365,7 @@ class FileController extends BaseController
         else
         {  
             $record = $fileModel->WHERE('requestID',$this->request->getPost('request'))->first(); 
-            $data = ['accountID', 
+            $data = ['accountID'=>session()->get('loggedUser'), 
                     'requestID'=>$this->request->getPost('request'),
                     'Fullname'=>$record['Fullname'],
                     'Department'=>$record['Department'],
@@ -403,8 +421,8 @@ class FileController extends BaseController
         {
         ?>
         <a href="#" class="list-group-item list-group-item-action" aria-current="true">
-            <p class="mb-1"><?php echo $row->Fullname ?></p>
-            <small><?php echo number_format($row->Amount,2) ?></small>
+            <p class="mb-1"><b><?php echo $row->Fullname ?></b></p>
+            <small>PhP <?php echo number_format($row->Amount,2) ?></small>
         </a>
         <?php
         }

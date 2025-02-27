@@ -360,7 +360,7 @@
               console.log(response);
                 $('#form1')[0].reset();
                 $('#replenishModal').modal('hide');
-                fetch();
+                fetch();unsettle();
                 Swal.fire({
                     title: "Great!",
                     text: "Successfully saved",

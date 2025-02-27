@@ -29,6 +29,12 @@
 
   <!-- Template Main CSS File -->
   <link href="assets/css/style.css" rel="stylesheet">
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script> 
+  <script type="text/javascript">
+    google.charts.load('visualization', "1", {
+      packages: ['corechart']
+    });
+  </script>
 </head>
 
 <body>
@@ -77,38 +83,25 @@
           <div class="card bg-primary text-white">
             <div class="card-body">
               <div class="card-title text-white">Cash Released</div>
-              <h1>0</h1>
+              <h1><?=$release?></h1>
             </div>
           </div>
         </div>
       </div>
       <div class="row g-3">
-        <div class="col-lg-12">
+        <div class="col-lg-8">
           <div class="card">
             <div class="card-body">
-              <div class="card-title"><i class="icon-copy bi bi-grid"></i>&nbsp;Recent</div>
-              <div class="table-responsive">
-                <table class="table table-striped datatable" style="font-size:12px;">
-                  <thead class="bg-primary text-white">
-                    <th>Date</th>
-                    <th>Fullname</th>
-                    <th>Department</th>
-                    <th>Amount</th>
-                    <th>Purpose</th>
-                  </thead>
-                  <tbody>
-                  <?php foreach($files as $row): ?>
-                  <tr>
-                    <td><?php echo $row['Date'] ?></td>
-                    <td><?php echo $row['Fullname'] ?></td>
-                    <td><?php echo $row['Department'] ?></td>
-                    <td><?php echo number_format($row['Amount'],2) ?></td>
-                    <td><?php echo $row['Purpose'] ?></td>
-                  </tr>
-                  <?php endforeach; ?>
-                  </tbody>
-                </table>
-              </div>
+              <div class="card-title"><i class="bx bx-line-chart"></i>&nbsp;Expense Trend</div>
+              <div id="chart" style="height:300px;"></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="card">
+            <div class="card-body">
+              <div class="card-title"><i class="bx bx-pie-chart-alt-2"></i>&nbsp;Departmental Expense</div>
+              <div id="chartContainer" style="height:300px;"></div>
             </div>
           </div>
         </div>
@@ -145,6 +138,66 @@
 
   <!-- Template Main JS File -->
   <script src="assets/js/main.js"></script>
+  <script>
+    google.charts.setOnLoadCallback(expenseChart);
+    google.charts.setOnLoadCallback(departmentExpenseChart);
+    function departmentExpenseChart()
+    {
+        var data = google.visualization.arrayToDataTable([
+        ["Department", "Total"],
+        <?php 
+        foreach ($expense as $row){
+        echo "['".$row->Department."',".$row->Total."],";
+        }
+        ?>
+      ]);
+
+      var options = {
+      title: '',
+      curveType: 'function',
+      legend: { position: 'bottom' },
+      };
+      /* Instantiate and draw the chart.*/
+      var chart = new google.visualization.PieChart(document.getElementById('chartContainer'));
+      chart.draw(data, options);
+    }
+    function expenseChart() 
+    {
+      var data = google.visualization.arrayToDataTable([
+        ["Month", "Total"],
+        <?php 
+        foreach ($chart as $row){
+        $month ="";
+        switch($row->Month)
+        {
+          case "01":$month="January";break;
+          case "02":$month="February";break;
+          case "03":$month="March";break;
+          case "04":$month="April";break;
+          case "05":$month="May";break;
+          case "06":$month="June";break;
+          case "07":$month="July";break;
+          case "08":$month="August";break;
+          case "09":$month="September";break;
+          case "10":$month="October";break;
+          case "11":$month="November";break;
+          case "12":$month="December";break;
+        }
+        echo "['".$month."',".$row->Total."],";
+        }
+        ?>
+      ]);
+
+      var options = {
+      title: '',
+      curveType: 'function',
+      legend: { position: 'bottom' },
+      };
+      /* Instantiate and draw the chart.*/
+      var chart = new google.visualization.ColumnChart(document.getElementById('chart'));
+      chart.draw(data, options);
+    }
+  </script>
 </body>
 
 </html>

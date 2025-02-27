@@ -55,6 +55,7 @@ $routes->post('release','FileController::release');
 $routes->post('add-item','FileController::addItem');
 $routes->post('close-item','FileController::closeItem');
 $routes->post('add-amount','FileController::addAmount');
+$routes->post('settle','FileController::settleItem');
 //compute
 $routes->get('unsettle-balance','Compute::unsettle');
 $routes->get('settle-balance','Compute::settle');

@@ -66,7 +66,7 @@ class Compute extends BaseController
         //settle
         $builder = $this->db->table('tbl_list');
         $builder->select('IFNULL(SUM(Amount),0)total');
-        $builder->WHERE('Status',1)->WHERE('DateCreated',date('Y-m-d'));
+        $builder->WHERE('Status',1);
         $data = $builder->get()->getRow();
         $settle = $data->total;
         //unliquidated

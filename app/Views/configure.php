@@ -56,10 +56,10 @@
           <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false"><span class="bi bi-shield-exclamation"></span>&nbsp;Access</button>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link" id="department-tab" data-bs-toggle="tab" data-bs-target="#department" type="button" role="tab" aria-controls="profile" aria-selected="false"><span class="bx bx-building-house"></span>&nbsp;Department</button>
+          <button class="nav-link" id="department-tab" data-bs-toggle="tab" data-bs-target="#departments" type="button" role="tab" aria-controls="departments" aria-selected="false"><span class="bx bx-building-house"></span>&nbsp;Department</button>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false"><span class="bi bi-server"></span>&nbsp;System Logs</button>
+          <button class="nav-link" id="logs-tab" data-bs-toggle="tab" data-bs-target="#logs" type="button" role="tab" aria-controls="logs" aria-selected="false"><span class="bi bi-server"></span>&nbsp;System Logs</button>
         </li>
       </ul>
       <div class="tab-content pt-2" id="myTabContent">
@@ -107,11 +107,11 @@
             </div>
           </div>
         </div>
-        <div class="tab-pane fade" id="department" role="tabpanel" aria-labelledby="department-tab">
+        <div class="tab-pane fade" id="departments" role="tabpanel" aria-labelledby="departments-tab">
           <div class="row g-3">
             <div class="col-lg-8">
               <div class="card">
-                <d class="card-body">
+                <div class="card-body">
                   <div class="card-title">Department</div>
                   <div class="table-responsive">
                     <table class="table table-striped" id="tbldepartment" style="font-size:12px;"> 
@@ -125,11 +125,12 @@
                   </div>
                 </div>
               </div>
-              <div class="col-lg-4">
-                <div class="card">
-                  <for class="card-body">
-                    <div class="card-title">New Entry</div>
-                    <form class="row g-3" method="POST" id="frmDepartment">
+            </div>
+            <div class="col-lg-4">
+              <div class="card">
+                <div class="card-body">
+                  <div class="card-title">New Entry</div>
+                  <form class="row g-3" method="POST" id="frmDepartment">
                       <?= csrf_field(); ?>
                       <div class="col-lg-12">
                         <label>New Department</label>
@@ -140,13 +141,12 @@
                         <button type="submit" class="btn btn-primary form-control">Add Entry</button>
                       </div>
                     </form>
-                  </div>
                 </div>
               </div>
             </div>           
           </div>
-        </div>
-        <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+        </div> 
+        <div class="tab-pane fade" id="logs" role="tabpanel" aria-labelledby="contact-tab">
           <div class="card">
             <div class="card-body">
               <br/>

@@ -167,7 +167,7 @@
           </div>
           <div class="card">
             <div class="card-body">
-              <div class="card-title">Cash On-Hand Breakdown</div>
+              <div class="card-title">Balance Overview</div>
               <div class="table-responsive">
                 <table class="table table-striped" id="tblcash" style="font-size:12px;">
                   <thead>
@@ -423,7 +423,28 @@
           success:function(response)
           {
             if(response==="success"){
-              fetch();
+              fetch();location.reload();
+            }
+            else
+            {
+              alert(response);
+            }
+          }
+        });
+      }
+    });
+
+    $(document).on('click','.settle',function(){
+      let confirmation = confirm('Do you want to tag this as settled?');
+      if(confirmation)
+      {
+        $.ajax({
+          url:"<?=site_url('settle')?>",
+          method:"POST",data:{value:$(this).val()},
+          success:function(response)
+          {
+            if(response==="success"){
+              fetch();location.reload();
             }
             else
             {

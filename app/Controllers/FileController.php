@@ -382,7 +382,7 @@ class FileController extends BaseController
     public function fetchItem()
     {
         $listModel = new \App\Models\listModel();
-        $list = $listModel->WHERE('Status',0)->findAll();
+        $list = $listModel->WHERE('Status<>',2)->findAll();
         foreach($list as $row)
         {
             ?>
@@ -393,9 +393,15 @@ class FileController extends BaseController
                 <td><?php echo $row['Particulars'] ?></td>
                 <td><?php echo number_format($row['Amount'],2) ?></td>
                 <td>
+                    <?php if($row['Status']==0){ ?>
                     <button type="button" class="btn btn-primary btn-sm close" value="<?php echo $row['listID'] ?>">
                         <span class="bi bi-x-square"></span>&nbsp;Close
                     </button>
+                    <?php }else if($row['Status']==1){ ?>
+                    <button type="button" class="btn btn-success btn-sm settle" value="<?php echo $row['listID'] ?>">
+                        <span class="bi bi-check-square"></span>&nbsp;Settle
+                    </button>
+                    <?php } ?>
                 </td>
             </tr>
             <?php
@@ -408,6 +414,33 @@ class FileController extends BaseController
         $val = $this->request->getPost('value');
         $data = ['Status'=>1];
         $listModel->update($val,$data);
+        echo "success";
+    }
+
+    public function settleItem()
+    {
+        $balanceModel = new \App\Models\balanceModel();
+        $listModel = new \App\Models\listModel();
+        $val = $this->request->getPost('value');
+        $data = ['Status'=>2];
+        $listModel->update($val,$data);
+        //return the amount 
+        $builder = $this->db->table('tblbalance');
+        $builder->select('NewBal');
+        $builder->orderBy('balanceID','DESC')->limit(1);
+        $balance = $builder->get()->getRow();
+        if($balance)
+        {
+            //get the approved amount
+            $list = $listModel->WHERE('listID',$val)->first();
+            //compute the new balance
+            $newBalance = $balance->NewBal+$list['Amount'];
+            $data = ['Date'=>date('Y-m-d'), 
+                    'BeginBal'=>$balance->NewBal,
+                    'NewAmount'=>$list['Amount'],
+                    'NewBal'=>$newBalance];
+            $balanceModel->save($data);
+        }
         echo "success";
     }
 

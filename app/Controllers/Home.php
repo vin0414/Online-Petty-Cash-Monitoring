@@ -24,9 +24,25 @@ class Home extends BaseController
         $pending = $fileModel->WHERE('Status',0)->countAllResults();
         $approve = $fileModel->WHERE('Status',5)->countAllResults();
         $total = $fileModel->countAllResults();
-        $files = $fileModel->orderBy('requestID', 'DESC')->findAll(10);
+        //release
+        $monitorModel = new \App\Models\monitorModel();
+        $release = $monitorModel->WHERE('Status',1)->countAllResults();
+        //charts for expense trend
+        $currentYear = date('Y');
+        $sql = "Select DATE_FORMAT(Date,'%m')Month,SUM(Amount)Total from tblrequest WHERE Status = 5 
+                AND DATE_FORMAT(Date,'%Y')=:year: 
+                GROUP BY DATE_FORMAT(Date,'%m')";
+        $query = $this->db->query($sql,['year'=>$currentYear]);
+        $chart  = $query->getResult();
+        //charts for expense per department
+        $sql = "Select Department,SUM(Amount)Total from tblrequest WHERE Status = 5 
+                AND DATE_FORMAT(Date,'%Y')=:year: 
+                GROUP BY Department";
+        $query = $this->db->query($sql,['year'=>$currentYear]);
+        $departmentExpense  = $query->getResult();
 
-        $data = ['title'=>$title,'pending'=>$pending,'approve'=>$approve,'total'=>$total,'files'=>$files];
+        $data = ['title'=>$title,'pending'=>$pending,'approve'=>$approve,'total'=>$total,
+                'chart'=>$chart,'expense'=>$departmentExpense,'release'=>$release];
         return view('dashboard',$data);
     }
 

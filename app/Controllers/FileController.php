@@ -157,7 +157,7 @@ class FileController extends BaseController
                 $record = ['Status'=>3];
                 $fileModel->update($approver['requestID'],$record);
                 //send to first assigned personnel
-                $assign = $assignModel->WHERE('Role','Pre-Final Approver')->first();
+                $assign = $assignModel->WHERE('Role','Prior Approver')->first();
                 $record = ['accountID'=>$assign['accountID'], 
                             'requestID'=>$approver['requestID'],
                             'DateReceived'=>date('Y-m-d'),

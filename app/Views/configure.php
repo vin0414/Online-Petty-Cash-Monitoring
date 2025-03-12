@@ -258,7 +258,7 @@
               <select class="form-control" name="level" required>
                 <option value="">Choose</option>
                 <option>Verifier</option>
-                <option>Pre-Final Approver</option>
+                <option>Prior Approver</option>
                 <option>Final Approver</option>
               </select>
               <div id="level-error" class="error-message text-danger text-sm"></div>

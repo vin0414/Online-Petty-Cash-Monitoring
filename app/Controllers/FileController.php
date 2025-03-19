@@ -203,7 +203,7 @@ class FileController extends BaseController
         $status = 2;
         $user = session()->get('loggedUser');
         //approver
-        $approver = $approveModel->WHERE('accountID',$user)->first();
+        $approver = $approveModel->WHERE('accountID',$user)->WHERE('approveID',$val)->first();
         $data = ['Status'=>$status,'Comment'=>$msg];
         $approveModel->update($val,$data);
         //update the status of the request
@@ -222,7 +222,7 @@ class FileController extends BaseController
     {
         $val = $this->request->getGet('value');
         $builder = $this->db->table('tblapprove a');
-        $builder->select('a.approveID,a.Status,b.requestID,b.Fullname,b.Department,b.Purpose,b.Amount,b.File');
+        $builder->select('a.approveID,a.Status,b.requestID,b.Fullname,b.Department,b.Purpose,b.Amount,b.File,a.Comment');
         $builder->join('tblrequest b','b.requestID=a.requestID','LEFT');
         $builder->WHERE('a.approveID',$val);
         $data = $builder->get()->getRow();
@@ -262,6 +262,11 @@ class FileController extends BaseController
                     <button type="button" class="btn btn-danger reject" value="<?php echo $data->approveID ?>">
                         <span class="bi bi-x-square"></span>&nbsp;Reject
                     </button>
+                </div>
+                <?php }else if($data->Status==2){ ?>
+                <div class="col-lg-12">
+                    <h5>Reason</h5>
+                    <textarea class="form-control" readonly><?php echo $data->Comment ?></textarea>
                 </div>
                 <?php } ?>
             </div>

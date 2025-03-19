@@ -50,7 +50,7 @@
     <section class="section dashboard">
       <div class="card">
         <div class="card-body">
-          <br/>
+          <div class="card-title">Manage Petty Cash</div>
           <table class="table table-striped datatable" style="font-size:12px;">
             <thead class="bg-primary text-white">
               <th>Date Needed</th>
@@ -61,6 +61,7 @@
               <th>Status</th>
               <th>Release?</th>
               <th>When?</th>
+              <th>Comment</th>
             </thead>
             <tbody>
             <?php foreach($files as $row): ?>
@@ -95,6 +96,7 @@
                   <?php }?>
                 </td>
                 <td><?php echo $row->DateTagged ?></td>
+                <td><?php echo substr($row->Comment,0,100) ?>...</td>
               </tr>
             <?php endforeach; ?>
             </tbody>

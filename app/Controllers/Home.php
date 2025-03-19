@@ -65,8 +65,9 @@ class Home extends BaseController
         //request
         $user = session()->get('loggedUser');
         $builder = $this->db->table('tblrequest a');
-        $builder->select('a.*,b.DateTagged,b.Status as tag');
+        $builder->select('a.*,b.DateTagged,b.Status as tag,c.Comment');
         $builder->join('tblmonitor b','b.requestID=a.requestID','LEFT');
+        $builder->join('(Select requestID,Comment from tblapprove WHERE Status=2) c','c.requestID=a.requestID','LEFT');
         $builder->WHERE('a.accountID',$user);
         $builder->groupBy('a.requestID');
         $files = $builder->get()->getResult();
@@ -177,15 +178,26 @@ class Home extends BaseController
                         ->orLike('Username',$searchTerm)
                         ->orLike('Role',$searchTerm);
         }
-        //account
-        $account = $accountModel->WHERE('accountID<>',0)->findAll();        
 
+        $limit = $_GET['length'] ?? 10;  // Number of records per page, default is 10
+        $offset = $_GET['start'] ?? 0;   // Starting record for pagination, default is 0
+        //account
+        $account = $accountModel->WHERE('accountID<>',0)->findAll($limit, $offset);        
         $totalRecords = $accountModel->countAllResults();
+        //filtered
+        $filteredaccountModel = clone $accountModel;
+        if ($searchTerm) {
+            $filteredaccountModel->like('Fullname', $searchTerm)
+                        ->orLike('Username',$searchTerm)
+                        ->orLike('Role',$searchTerm);
+        }
+
+        $filteredRecords = $filteredaccountModel->countAllResults();
 
         $response = [
             "draw" => $_GET['draw'],
             "recordsTotal" => $totalRecords,
-            "recordsFiltered" => count($account),
+            "recordsFiltered" => $filteredRecords,
             'data' => [] 
         ];
         foreach ($account as $row) {
@@ -327,22 +339,41 @@ class Home extends BaseController
 
     public function fetchDepartment()
     {
-        $departmentModel = new \App\Models\departmentModel();
+        $departmentModel = new \App\Models\DepartmentModel();
         $searchTerm = $_GET['search']['value'] ?? '';
+
+        // Apply the search filter for the main query
         if ($searchTerm) {
             $departmentModel->like('departmentID', $searchTerm)
-                        ->orLike('departmentName',$searchTerm)
-                        ->orLike('DateCreated',$searchTerm);
+                            ->orLike('departmentName', $searchTerm)
+                            ->orLike('DateCreated', $searchTerm);
         }
-        //account
-        $department = $departmentModel->findAll();        
 
+        // Pagination: Get the 'start' and 'length' from the request (these are sent by DataTables)
+        $limit = $_GET['length'] ?? 10;  // Number of records per page, default is 10
+        $offset = $_GET['start'] ?? 0;   // Starting record for pagination, default is 0
+
+        // Clone the model for counting filtered records, while keeping the original for data fetching
+        $filteredDepartmentModel = clone $departmentModel;
+        if ($searchTerm) {
+            $filteredDepartmentModel->like('departmentID', $searchTerm)
+                                    ->orLike('departmentName', $searchTerm)
+                                    ->orLike('DateCreated', $searchTerm);
+        }
+
+        // Fetch filtered records based on limit and offset
+        $department = $departmentModel->findAll($limit, $offset);
+
+        // Count total records (without filter)
         $totalRecords = $departmentModel->countAllResults();
+
+        // Count filtered records (with filter)
+        $filteredRecords = $filteredDepartmentModel->countAllResults();
 
         $response = [
             "draw" => $_GET['draw'],
             "recordsTotal" => $totalRecords,
-            "recordsFiltered" => count($department),
+            "recordsFiltered" => $filteredRecords,
             'data' => [] 
         ];
         foreach ($department as $row) {

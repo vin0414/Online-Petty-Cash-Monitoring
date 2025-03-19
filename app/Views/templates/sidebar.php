@@ -24,13 +24,6 @@
               <i class="bi bi-circle"></i><span>Manage</span>
             </a>
           </li>
-          <?php if($title == 'PCF Liquidation'){ ?>
-            <li>
-              <a href="javascript:void(0);" class="<?= ($title == 'PCF Liquidation') ? 'active' : '' ?>">
-                <i class="bi bi-circle"></i><span>Liquidate</span>
-              </a>
-            </li>
-          <?php } ?>
           <?php if(session()->get('role')=="Department Head"||session()->get('role')=="Officer"){ ?>
           <?php 
           $user = session()->get('loggedUser');
@@ -45,13 +38,13 @@
           <?php } ?>
         </ul>
       </li><!-- End Forms Nav -->
-      <?php if(session()->get('role')=="Admin"){ ?>
         <li class="nav-item">
           <a class="nav-link <?= ($title == 'Manage Cash') ? '' : 'collapsed' ?>" href="<?=site_url('manage-cash')?>">
             <i class="bi bi-clipboard-data"></i>
             <span>Manage Cash</span>
           </a>
         </li>
+        <?php if(session()->get('role')=="Admin"){ ?>
         <li class="nav-item">
           <a class="nav-link <?= ($title == 'PCF Settings') ? '' : 'collapsed' ?>" href="<?=site_url('configure')?>">
             <i class="bi bi-gear"></i>

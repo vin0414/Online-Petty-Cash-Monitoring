@@ -8,7 +8,7 @@ class AuthController extends BaseController
     private $db;
     public function __construct()
     {
-        helper(['form']);
+        helper(['url','form']);
         $this->db = db_connect();
     }
 

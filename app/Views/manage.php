@@ -84,7 +84,9 @@
                     <span class="badge bg-primary">To General Manager</span>
                   <?php }else if($row->Status==5){?>
                     <span class="badge bg-success">Approved</span>
-                  <?php }?>
+                  <?php }else {?>
+                    <span class="badge bg-danger">On-hold</span>
+                  <?php } ?>
                 </td>
                 <td>
                   <?php if($row->Status==5){?>

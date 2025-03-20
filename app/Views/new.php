@@ -81,7 +81,7 @@
                             </div>
                             <div class="col-lg-2">
                                 <div class="form-floating">
-                                    <input type="date" class="form-control" name="date" value="<?=date('Y-m-d')?>" required/>
+                                    <input type="date" class="form-control" name="date" id="date" value="<?=date('Y-m-d')?>" required/>
                                     <label>Date Needed</label>
                                 </div>
                                 <div class="text-danger"><?=isset($validation)? display_error($validation,'date') : '' ?></div>
@@ -126,7 +126,7 @@
                         <div class="text-danger"><?=isset($validation)? display_error($validation,'approver') : '' ?></div>
                     </div>
                     <div class="col-12">
-                        <button type="submit" class="btn btn-primary"><span class="bx bx-mail-send"></span>&nbsp;Send</button>
+                        <button type="submit" class="btn btn-primary"><span class="bx bx-mail-send"></span>&nbsp;Send File</button>
                     </div>
                 </form>
             </div>
@@ -164,6 +164,8 @@
   <!-- Template Main JS File -->
   <script src="assets/js/main.js"></script>
   <script type="text/javascript">
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('date').setAttribute('min', today);
     // Reset form if the success message is displayed
     <?php if(!empty(session()->getFlashdata('success'))): ?>
         $('#frmRequest')[0].reset();

@@ -112,8 +112,11 @@ class Home extends BaseController
             //accounts
             $accountModel = new \App\Models\accountModel();
             $account = $accountModel->WHERE('Status',1)->findAll();
+            //department
+            $departmentModel = new \App\Models\departmentModel();
+            $department = $departmentModel->findAll();
             //data
-            $data = ['title'=>$title,'log'=>$log,'account'=>$account];
+            $data = ['title'=>$title,'log'=>$log,'account'=>$account,'department'=>$department];
             return view('configure',$data);
         }
         return redirect("/dashboard");
@@ -171,28 +174,43 @@ class Home extends BaseController
 
     public function fetchUser()
     {
-        $accountModel = new \App\Models\accountModel();
-        $searchTerm = $_GET['search']['value'] ?? '';
-        if ($searchTerm) {
-            $accountModel->like('Fullname', $searchTerm)
-                        ->orLike('Username',$searchTerm)
-                        ->orLike('Role',$searchTerm);
-        }
+        $accountModel = new \App\Models\AccountModel();
 
+        // Get search term, limit, and offset from the request (GET parameters)
+        $searchTerm = $_GET['search']['value'] ?? '';
         $limit = $_GET['length'] ?? 10;  // Number of records per page, default is 10
         $offset = $_GET['start'] ?? 0;   // Starting record for pagination, default is 0
-        //account
-        $account = $accountModel->WHERE('accountID<>',0)->findAll($limit, $offset);        
-        $totalRecords = $accountModel->countAllResults();
-        //filtered
-        $filteredaccountModel = clone $accountModel;
+
+        // Start the query builder
+        $builder = $accountModel->builder();
+
+        // Apply search filter if there's a search term
         if ($searchTerm) {
-            $filteredaccountModel->like('Fullname', $searchTerm)
-                        ->orLike('Username',$searchTerm)
-                        ->orLike('Role',$searchTerm);
+            $builder->like('Fullname', $searchTerm)
+                    ->orLike('Username', $searchTerm)
+                    ->orLike('Role', $searchTerm);
         }
 
-        $filteredRecords = $filteredaccountModel->countAllResults();
+        // Apply the condition where accountID is not 0
+        $builder->where('accountID <>', 0);
+
+        // Join with DepartmentModel (assuming departmentID in account matches id in department)
+        $builder->join('tbldepartment', 'tbldepartment.departmentID = tblaccount.departmentID', 'left'); // 'left' join is just an example; adjust to your needs
+
+        // Fetch the results with the specified limit and offset (pagination)
+        $account = $builder->limit($limit, $offset)->get()->getResult();
+
+        // Get the total number of records (without pagination)
+        $totalRecords = $accountModel->countAllResults();
+
+        // Get the filtered records count (with search term applied)
+        $filteredAccountModel = clone $accountModel;
+        if ($searchTerm) {
+            $filteredAccountModel->like('Fullname', $searchTerm)
+                                ->orLike('Username', $searchTerm)
+                                ->orLike('Role', $searchTerm);
+        }
+        $filteredRecords = $filteredAccountModel->where('accountID <>', 0)->countAllResults();
 
         $response = [
             "draw" => $_GET['draw'],
@@ -202,13 +220,14 @@ class Home extends BaseController
         ];
         foreach ($account as $row) {
             $response['data'][] = [
-                'date' => date('Y-M-d', strtotime($row['DateCreated'])),
-                'username' => htmlspecialchars($row['Username'], ENT_QUOTES),
-                'fullname' => htmlspecialchars($row['Fullname'], ENT_QUOTES),
-                'role' => htmlspecialchars($row['Role'], ENT_QUOTES),
-                'status' => ($row['Status'] == 0) ? '<span class="badge bg-danger">Inactive</span>' : 
+                'date' => date('Y-M-d', strtotime($row->DateCreated)),
+                'username' => htmlspecialchars($row->Username, ENT_QUOTES),
+                'fullname' => htmlspecialchars($row->Fullname, ENT_QUOTES),
+                'department' => htmlspecialchars($row->departmentName, ENT_QUOTES),
+                'role' => htmlspecialchars($row->Role, ENT_QUOTES),
+                'status' => ($row->Status == 0) ? '<span class="badge bg-danger">Inactive</span>' : 
                 '<span class="badge bg-success">Active</span>',
-                'action' =>($row['Status'] == 1) ?'<button type="button" class="btn btn-primary btn-sm remove" value="' . htmlspecialchars($row['accountID'], ENT_QUOTES) . '"><i class="bi bi-x-square"></i>&nbsp;Remove</button>':''
+                'action' =>($row->Status == 1) ?'<button type="button" class="btn btn-primary btn-sm remove" value="' . htmlspecialchars($row->accountID, ENT_QUOTES) . '"><i class="bi bi-x-square"></i>&nbsp;Remove</button>':''
             ];
         }
         // Return the response as JSON
@@ -222,6 +241,7 @@ class Home extends BaseController
             'csrf_test_name'=>'required',
             'fullname'=>'required|is_unique[tblaccount.Fullname]',
             'username'=>'required|is_unique[tblaccount.Username]',
+            'department'=>'required',
             'role'=>'required'
         ]);
 
@@ -236,6 +256,7 @@ class Home extends BaseController
                     'Password'=>$defaultPassword,
                     'Fullname'=>$this->request->getPost('fullname'),
                     'Role'=>$this->request->getPost('role'),
+                    'departmentID'=>$this->request->getPost('department'),
                     'Status'=>1,
                     'DateCreated'=>date('Y-m-d')];
             $accountModel->save($data);

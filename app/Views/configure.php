@@ -96,6 +96,7 @@
                     <th>Date</th>
                     <th>Username</th>
                     <th>Fullname</th>
+                    <th>Department</th>
                     <th>Role</th>
                     <th>Status</th>
                     <th>Action</th>
@@ -223,6 +224,16 @@
                   <div id="role-error" class="error-message text-danger text-sm"></div>
                 </div>
               </div>
+            </div>
+            <div class="col-lg-12 form-group">
+              <label>Department</label>
+              <select class="form-control" name="department" required>
+                <option value="">Choose</option>
+                <?php foreach($department as $row): ?>
+                  <option value="<?php echo $row['departmentID'] ?>"><?php echo $row['departmentName'] ?></option>
+                <?php endforeach; ?>
+              </select>
+              <div id="department-error" class="error-message text-danger text-sm"></div>
             </div>
             <div class="col-lg-12 form-group">
               <button type="submit" class="form-control btn btn-primary">Register</button>
@@ -404,6 +415,9 @@
             },
             {
               "data": "fullname"
+            },
+            {
+                "data": "department"
             },
             {
                 "data": "role"

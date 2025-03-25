@@ -73,6 +73,7 @@ $routes->group('',['filter'=>'AuthCheck'],function($routes)
     $routes->get('dashboard', 'Home::dashboard');
     $routes->get('new','Home::newRequest');
     $routes->get('edit','Home::editRequest');
+    $routes->get('re-apply/(:any)','Home::reApply/$1');
     $routes->get('manage','Home::manageRequest');
     $routes->get('review','Home::reviewRequest');
     $routes->get('manage-cash','Home::manageCash');

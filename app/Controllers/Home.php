@@ -76,6 +76,13 @@ class Home extends BaseController
         return view('manage',$data);
     }
 
+    public function reApply($id)
+    {
+        $title = "Re-Apply";
+        $data = ['title'=>$title];
+        return view('re-apply',$data);
+    }
+
     public function reviewRequest()
     {
         $title = "PCF Review";

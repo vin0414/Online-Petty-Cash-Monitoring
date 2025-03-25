@@ -11,8 +11,8 @@
   <meta content="keywords" name="petty cash, petty-cash, finance">
 
   <!-- Favicons -->
-  <link href="assets/img/favicon.png" rel="icon">
-  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+  <link href="/assets/img/favicon.png" rel="icon">
+  <link href="/assets/img/apple-touch-icon.png" rel="apple-touch-icon">
 
   <!-- Google Fonts -->
   <link href="https://fonts.gstatic.com" rel="preconnect">
@@ -85,7 +85,7 @@
                   <?php }else if($row->Status==5){?>
                     <span class="badge bg-success">Approved</span>
                   <?php }else {?>
-                    <span class="badge bg-danger">On-hold</span>
+                    <a href="<?=site_url('re-apply')?>/<?php echo $row->requestID ?>" class="badge bg-danger">Re-Apply</a>
                   <?php } ?>
                 </td>
                 <td>

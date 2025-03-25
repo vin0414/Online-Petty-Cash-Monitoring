@@ -10,10 +10,10 @@
       </li><!-- End Dashboard Nav -->
       <li class="nav-heading">Pages</li>
       <li class="nav-item">
-        <a class="nav-link <?= ($title == 'New PCF' || $title=='Manage'|| $title=='PCF Review' || $title=='PCF Liquidation') ? '' : 'collapsed' ?>" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
+        <a class="nav-link <?= ($title == 'New PCF' || $title=='Manage'|| $title=='PCF Review' || $title=='Re-Apply') ? '' : 'collapsed' ?>" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
           <i class="bi bi-journal-text"></i><span>Petty Cash</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
-        <ul id="forms-nav" class="nav-content collapse <?= ($title == 'New PCF'||$title == 'Manage'|| $title=='PCF Review' || $title=='PCF Liquidation') ? 'show' : '' ?>" data-bs-parent="#sidebar-nav">
+        <ul id="forms-nav" class="nav-content collapse <?= ($title == 'New PCF'||$title == 'Manage'|| $title=='PCF Review' || $title=='Re-Apply') ? 'show' : '' ?>" data-bs-parent="#sidebar-nav">
           <li>
             <a href="<?=site_url('new')?>" class="<?= ($title == 'New PCF') ? 'active' : '' ?>">
               <i class="bi bi-circle"></i><span>New Request</span>
@@ -24,6 +24,13 @@
               <i class="bi bi-circle"></i><span>Manage</span>
             </a>
           </li>
+          <?php if($title=="Re-Apply"){?>
+            <li>
+              <a href="javascript:void(0);" class="<?= ($title == 'Re-Apply') ? 'active' : '' ?>">
+                <i class="bi bi-circle"></i><span>Re-Apply</span>
+              </a>
+            </li>
+          <?php } ?>
           <?php if(session()->get('role')=="Department Head"||session()->get('role')=="Officer"){ ?>
           <?php 
           $user = session()->get('loggedUser');

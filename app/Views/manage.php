@@ -51,6 +51,11 @@
       <div class="card">
         <div class="card-body">
           <div class="card-title">Manage Petty Cash</div>
+          <?php if(!empty(session()->getFlashdata('success'))) : ?>
+              <div class="alert alert-success" role="alert">
+                  <?= session()->getFlashdata('success'); ?>
+              </div>
+          <?php endif; ?>
           <table class="table table-striped datatable" style="font-size:12px;">
             <thead class="bg-primary text-white">
               <th>Date Needed</th>

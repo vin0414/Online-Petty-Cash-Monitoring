@@ -67,7 +67,7 @@ class Home extends BaseController
         $builder = $this->db->table('tblrequest a');
         $builder->select('a.*,b.DateTagged,b.Status as tag,c.Comment');
         $builder->join('tblmonitor b','b.requestID=a.requestID','LEFT');
-        $builder->join('(Select requestID,Comment from tblapprove WHERE Status=2) c','c.requestID=a.requestID','LEFT');
+        $builder->join('(Select requestID,Comment from tblapprove WHERE Status IN (2,3) ORDER BY approveID DESC limit 1) c','c.requestID=a.requestID','LEFT');
         $builder->WHERE('a.accountID',$user);
         $builder->groupBy('a.requestID');
         $files = $builder->get()->getResult();
@@ -79,7 +79,16 @@ class Home extends BaseController
     public function reApply($id)
     {
         $title = "Re-Apply";
-        $data = ['title'=>$title];
+        $accountModel = new \App\Models\accountModel();
+        $account = $accountModel->WHERE('Role','Department Head')->findAll();
+        //department
+        $departmentModel = new \App\Models\departmentModel();
+        $department = $departmentModel->findAll();
+        //file
+        $fileModel = new \App\Models\fileModel();
+        $file = $fileModel->WHERE('requestID',$id)->first();
+
+        $data = ['title'=>$title,'account'=>$account,'department'=>$department,'file'=>$file];
         return view('re-apply',$data);
     }
 

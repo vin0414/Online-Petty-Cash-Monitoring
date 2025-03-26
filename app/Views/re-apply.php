@@ -6,7 +6,7 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>Online Petty Cash - Manage</title>
+  <title>Online Petty Cash - Re-Application</title>
   <meta content="description" name="Online petty-cash system for APFC Employees">
   <meta content="keywords" name="petty cash, petty-cash, finance">
 
@@ -50,8 +50,69 @@
     <section class="section dashboard">
       <div class="card">
         <div class="card-body">
-          <div class="card-title">Manage Petty Cash</div>
-          
+          <div class="card-title">Re-Apply Petty Cash</div>
+          <form method="POST" autocomplete="OFF" action="<?=site_url('edit')?>" enctype="multipart/form-data" class="row g-3" id="frmRequest">
+            <?= csrf_field(); ?>
+            <input type="hidden" name="requestID" value="<?=$file['requestID']?>"/>
+            <div class="col-12">
+                <div class="row g-3">
+                    <div class="col-lg-7">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" name="fullname" value="<?=$file['Fullname']?>" required/>
+                            <label>Fullname</label>
+                        </div>
+                        <div class="text-danger"><?=isset($validation)? display_error($validation,'fullname') : '' ?></div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-floating">
+                            <select class="form-control" name="department" required>
+                                <option value="">Choose</option>
+                                <?php foreach($department as $row): ?>
+                                    <option <?php echo ($row['departmentName'] == $file['Department']) ? 'selected' : ''; ?>><?php echo $row['departmentName'] ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                            <label>Department</label>
+                        </div>
+                        <div class="text-danger"><?=isset($validation)? display_error($validation,'department') : '' ?></div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="form-floating">
+                            <input type="date" class="form-control" name="date" id="date" value="<?=$file['Date']?>" required/>
+                            <label>Date Needed</label>
+                        </div>
+                        <div class="text-danger"><?=isset($validation)? display_error($validation,'date') : '' ?></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="form-floating">
+                    <textarea class="form-control" name="purpose" style="height:150px;" required><?=$file['Purpose']?></textarea>
+                    <label>Purpose</label>
+                </div>
+                <div class="text-danger"><?=isset($validation)? display_error($validation,'purpose') : '' ?></div>
+            </div>
+            <div class="col-12">
+                <div class="row g-3">
+                    <div class="col-lg-6">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" name="amount" value="<?=$file['Amount']?>" required/>
+                            <label>Amount</label>
+                        </div>
+                        <div class="text-danger"><?=isset($validation)? display_error($validation,'amount') : '' ?></div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="form-floating">
+                            <input type="file" class="form-control" name="file"/>
+                            <label>Attachment</label>
+                        </div>
+                        <div class="text-danger"><?=isset($validation)? display_error($validation,'file') : '' ?></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary"><span class="bx bx-mail-send"></span>&nbsp;Save Changes</button>
+            </div>
+        </form>
         </div>
       </div>
     </section>

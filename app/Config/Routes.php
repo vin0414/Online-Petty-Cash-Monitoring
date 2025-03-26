@@ -34,6 +34,7 @@ $routes->get('/logout','AuthController::logout');
 $routes->get('/auto-login/(:any)','AuthController::autoLogin/$1');
 //functions
 $routes->post('save','FileController::save');
+$routes->post('edit','FileController::edit');
 //get
 $routes->get('fetch-assign','Home::fetchAssign');
 $routes->get('fetch-user','Home::fetchUser');
@@ -51,6 +52,7 @@ $routes->post('remove-assignment','Home::removeAssignment');
 $routes->post('remove-user','Home::removeUser');
 $routes->post('accept','FileController::accept');
 $routes->post('reject','FileController::reject');
+$routes->post('hold','FileController::hold');
 $routes->post('release','FileController::release');
 $routes->post('add-item','FileController::addItem');
 $routes->post('close-item','FileController::closeItem');

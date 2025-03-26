@@ -221,6 +221,37 @@
         }
       }
     });
+
+    $(document).on('click','.hold',function(){
+      var confirmation = confirm("Do you want to put on hold this request?");
+      if(confirmation)
+      {
+        var message = prompt("Please leave a comment");
+        if(message)
+        {
+          $.ajax({
+            url:"<?=site_url('hold')?>",
+            method:"POST",data:{value:$(this).val(),message:message},
+            success:function(response)
+            {
+              if(response==="success")
+              {
+                tables.ajax.reload();
+                $('#viewModal').modal('hide');
+              }
+              else
+              {
+                alert(response);
+              }
+            }
+          });
+        }
+        else
+        {
+          alert("Invalid! Please try again");
+        }
+      }
+    });
   </script>
 </body>
 

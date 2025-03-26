@@ -39,7 +39,7 @@ class FileController extends BaseController
         {
             if ($file->isValid() && ! $file->hasMoved())
             {
-                $filename = $file->getClientName();
+                $filename = date('YmdHis').$file->getClientName();
                 $file->move('files/',$filename);
                 $user = session()->get('loggedUser');
                 $status = 0;
@@ -67,6 +67,66 @@ class FileController extends BaseController
                 $validation = ['file','No file was selected or the file is invalid'];
                 return view('new', ['validation' => $validation]);
             }
+        }
+    }
+
+    public function edit()
+    {
+        $fileModel = new \App\Models\fileModel();
+        $approveModel = new \App\Models\approveModel();
+        //data
+        $id = $this->request->getPost('requestID');
+        $fullname = $this->request->getPost('fullname');
+        $department = $this->request->getPost('department');
+        $date = $this->request->getPost('date');
+        $purpose = $this->request->getPost('purpose');
+        $amount = $this->request->getPost('amount');
+        $file = $this->request->getFile('file');
+
+        $validation = $this->validate([
+            'csrf_test_name'=>'required',
+            'fullname'=>'required',
+            'department'=>'required',
+            'date'=>'required',
+            'amount'=>'required',
+        ]);
+
+        if(!$validation)
+        {
+            return view('new',['validation'=>$this->validator]);
+        }
+        else
+        {
+            //get the previous status
+            $holdModel = new \App\Models\holdModel();
+            $hold = $holdModel->WHERE('requestID',$id)->WHERE('done','No')->first();
+            $filename = date('YmdHis').$file->getClientName();
+            if(empty($file->getClientName()))
+            {
+                $amt = str_replace(",","",$amount);
+                $data = ['Fullname'=>$fullname, 'Department'=>$department,'date'=>$date,
+                        'Purpose'=>$purpose,'Amount'=>$amt,'Status'=>$hold['status']];
+                $fileModel->update($id,$data);
+            }
+            else
+            {
+                $file->move('files/',$filename);
+                $amt = str_replace(",","",$amount);
+                $data = ['Fullname'=>$fullname, 'Department'=>$department,'date'=>$date,
+                        'Purpose'=>$purpose,'Amount'=>$amt,'File'=>$filename,'Status'=>$hold['status']];
+                $fileModel->update($id,$data);   
+            }
+            //update the hold status
+            $datas = ['done'=>'Yes'];
+            $holdModel->update($hold['holdID'],$datas);
+            //send to approver
+            $approver = $approveModel->WHERE('requestID',$id)
+            ->WHERE('accountID',$hold['accountID'])
+            ->WHERE('status',3)
+            ->first();
+            $record = ['Status'=>0];
+            $approveModel->update($approver['approveID'],$record);
+            return redirect()->to('/manage')->with('success', 'Form submitted successfully');
         }
     }
 
@@ -109,9 +169,10 @@ class FileController extends BaseController
                 'requestor' => $row->Fullname,
                 'department' => $row->Department,
                 'amount' => htmlspecialchars(number_format($row->Amount,2), ENT_QUOTES),
-                'status' => ($row->Status == 0) ? '<span class="badge bg-warning">PENDING</span>' : 
-                (($row->Status == 2) ? '<span class="badge bg-danger">REJECTED</span>' :
-                '<span class="badge bg-success">APPROVED</span>'),
+                'status' => ($row->Status == 0) ? '<span class="badge bg-warning">Pending</span>' : 
+                (($row->Status == 3) ? '<span class="badge bg-danger">On Hold</span>' :
+                (($row->Status == 2) ? '<span class="badge bg-danger">Rejected</span>' :
+                '<span class="badge bg-success">Approved</span>')),
                 'approve' => empty($row->DateApproved) ? '-' : date('Y-M-d', strtotime($row->DateApproved)),
             ];
         }
@@ -218,6 +279,38 @@ class FileController extends BaseController
         echo "success";
     }
 
+    public function hold()
+    {
+        date_default_timezone_set('Asia/Manila');
+        $fileModel = new \App\Models\fileModel();
+        $approveModel = new \App\Models\approveModel();
+        //data
+        $val = $this->request->getPost('value');
+        $msg = $this->request->getPost('message');
+        $status = 3;
+        $user = session()->get('loggedUser');
+        //approver
+        $approver = $approveModel->WHERE('accountID',$user)->WHERE('approveID',$val)->first();
+        $data = ['Status'=>$status,'Comment'=>$msg];
+        $approveModel->update($val,$data);
+        //get the previous status
+        $prevStatus = $fileModel->WHERE('requestID',$approver['requestID'])->first();
+        //update the status of the request
+        $record = ['Status'=>6];
+        $fileModel->update($approver['requestID'],$record);
+        //create on hold log
+        $holdModel = new \App\Models\holdModel();
+        $datas = ['requestID'=>$approver['requestID'], 'status'=>$prevStatus['Status'],'accountID'=>$user,'date'=>date('Y-m-d'),'done'=>'No'];
+        $holdModel->save($datas);
+        //create log
+        $logModel = new \App\Models\logModel(); 
+        $data = ['Date'=>date('Y-m-d H:i:s a'),
+                'Activity'=>'Hold the PCF Number :'."PCF-".str_pad($approver['requestID'], 4, '0', STR_PAD_LEFT),
+                'accountID'=>session()->get('loggedUser')];
+        $logModel->save($data);
+        echo "success";
+    }
+
     public function viewDetails()
     {
         $val = $this->request->getGet('value');
@@ -262,8 +355,11 @@ class FileController extends BaseController
                     <button type="button" class="btn btn-danger reject" value="<?php echo $data->approveID ?>">
                         <span class="bi bi-x-square"></span>&nbsp;Reject
                     </button>
+                    <button type="button" class="btn btn-warning hold" style="float:right;" value="<?php echo $data->approveID ?>">
+                        <span class="bi bi-exclamation-triangle"></span>&nbsp;Hold
+                    </button>
                 </div>
-                <?php }else if($data->Status==2){ ?>
+                <?php }else if($data->Status==2||$data->Status==3){ ?>
                 <div class="col-lg-12">
                     <h5>Reason</h5>
                     <textarea class="form-control" readonly><?php echo $data->Comment ?></textarea>

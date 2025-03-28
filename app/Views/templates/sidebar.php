@@ -45,12 +45,19 @@
           <?php } ?>
         </ul>
       </li><!-- End Forms Nav -->
+      <?php
+        $user = session()->get('loggedUser');
+        $assignModel  = new \App\Models\assignModel();
+        $assign = $assignModel->WHERE('accountID',$user)->first();
+        if($assign || session()->get('role')=="Admin")
+        { ?>
         <li class="nav-item">
           <a class="nav-link <?= ($title == 'Manage Cash') ? '' : 'collapsed' ?>" href="<?=site_url('manage-cash')?>">
             <i class="bi bi-clipboard-data"></i>
             <span>Manage Cash</span>
           </a>
         </li>
+        <?php } ?>
         <?php if(session()->get('role')=="Admin"){ ?>
         <li class="nav-item">
           <a class="nav-link <?= ($title == 'PCF Settings') ? '' : 'collapsed' ?>" href="<?=site_url('configure')?>">

@@ -554,10 +554,13 @@ class FileController extends BaseController
         foreach($unsettle as $row)
         {
         ?>
-        <a href="#" class="list-group-item list-group-item-action" aria-current="true">
-            <p class="mb-1"><b><?php echo $row->Fullname ?></b></p>
-            <small>PhP <?php echo number_format($row->Amount,2) ?></small>
-        </a>
+        <tr>
+            <td><?php echo $row->Date ?></td>
+            <td><?php echo $row->Fullname ?></td>
+            <td><?php echo $row->Department ?></td>
+            <td><?php echo $row->Purpose ?></td>
+            <td><?php echo number_format($row->Amount,2) ?></td>
+        </tr>
         <?php
         }
     }

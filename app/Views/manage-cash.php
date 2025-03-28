@@ -48,13 +48,6 @@
     </div><!-- End Page Title -->
     <section class="section dashboard">
       <ul class="nav nav-tabs" id="myTab" role="tablist">
-        <?php 
-        $user = session()->get('loggedUser');
-        $assignModel  = new \App\Models\assignModel();
-        $assign = $assignModel->WHERE('accountID',$user)->first();
-        if($assign || session()->get('role')=="Admin")
-        {        
-        ?>
         <li class="nav-item" role="presentation">
           <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true"><span class="bi bi-download"></span>&nbsp;For Release</button>
         </li>
@@ -62,15 +55,13 @@
           <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false"><span class="bi bi-stack"></span>&nbsp;For Replenish</button>
         </li>
         <li class="nav-item" role="presentation">
+          <button class="nav-link" id="unliquidated-tab" data-bs-toggle="tab" data-bs-target="#unliquidated" type="button" role="tab" aria-controls="unliquidate" aria-selected="false"><span class="bi bi-credit-card"></span>&nbsp;Unliquidated</button>
+        </li>
+        <li class="nav-item" role="presentation">
           <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false"><span class="bi bi-hdd-stack"></span>&nbsp;Account Balance</button>
         </li>
-        <?php } ?>
       </ul> 
       <div class="tab-content pt-2" id="myTabContent">
-        <?php 
-        if($assign || session()->get('role')=="Admin")
-        {
-        ?>
         <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
           <div class="card">
             <div class="card-body">
@@ -88,7 +79,7 @@
                     <th>When</th>
                     <th>Action</th>
                   </thead>
-            <tbody>
+                  <tbody>
                   </tbody>
                 </table>
               </div>
@@ -97,7 +88,7 @@
         </div>
         <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
           <div class="row">
-            <div class="col-lg-9">
+            <div class="col-lg-12">
               <div class="card">
                 <div class="card-body">
                   <h6 class="card-title">Liquidated/Settled
@@ -123,13 +114,27 @@
                 </div>
               </div>
             </div>
-            <div class="col-lg-3">
-              <div class="card">
-                <div class="card-body">
-                  <h6 class="card-title">Unliquidated</h6>
-                  <div class="list-group" id="result">
-                  </div>
-                </div>
+          </div>
+        </div>
+        <div class="tab-pane fade" id="unliquidated" role="tabpanel" aria-labelledby="unliquidate-tab">
+          <div class="card">
+            <div class="card-body">
+              <div class="card-title">Unliquidated</div>
+              <div class="table-responsive">
+                  <table class="table table-striped" style="font-size:12px;"> 
+                    <thead>
+                      <th>Date</th>
+                      <th>Fullname</th>
+                      <th>Department</th>
+                      <th>Particulars</th>
+                      <th>Amount</th>
+                    </thead>
+                    <tbody id="result">
+                      <tr>
+                        <td colspan="5" class="text-center">No Record(s)</td>
+                      </tr>
+                    </tbody>
+                  </table>
               </div>
             </div>
           </div>
@@ -203,75 +208,6 @@
             </div>
           </div>
         </div>
-        <?php }else { ?>
-        <div class="tab-pane fade active show" id="contact" role="tabpanel" aria-labelledby="contact-tab">
-          <div class="card">
-            <div class="card-body">
-              <div class="card-title">Remaining Balance</div>
-              <h1 id="total">0.00</h1>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-lg-3">
-              <div class="card">
-                <div class="card-body">
-                  <div class="card-title">Unsettled Balance</div>
-                  <h1 id="unliquidate">0</h1>
-                </div>
-              </div>
-            </div>
-            <div class="col-lg-3">
-              <div class="card">
-                <div class="card-body">
-                  <div class="card-title">Total Settled Amount</div>
-                  <h1 id="unsettleAmt">0</h1>
-                </div>
-              </div>
-            </div>
-            <div class="col-lg-3">
-              <div class="card">
-                <div class="card-body">
-                  <div class="card-title">Replenishment</div>
-                  <h1 id="settleAmt">0</h1>
-                </div>
-              </div>
-            </div>
-            <div class="col-lg-3">
-              <div class="card">
-                <div class="card-body">
-                  <div class="card-title">Cash On-Hand</div>
-                  <h1 id="cash">0</h1>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="card">
-            <div class="card-body">
-              <div class="card-title">Balance Overview</div>
-              <div class="table-responsive">
-                <table class="table table-striped" id="tblcash" style="font-size:12px;">
-                  <thead>
-                    <th>Date</th>
-                    <th>Beginning Balance</th>
-                    <th>New Amount</th>
-                    <th>New Balance</th>
-                  </thead>
-                  <tbody>
-                  <?php foreach($balance as $row): ?>
-                  <tr>
-                    <td><?php echo date('Y-M-d',strtotime($row['Date'])) ?></td>
-                    <td><?php echo number_format($row['BeginBal'],2) ?></td>
-                    <td><?php echo number_format($row['NewAmount'],2) ?></td>
-                    <td><?php echo number_format($row['NewBal'],2) ?></td>
-                  </tr>
-                  <?php endforeach; ?>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-        <?php } ?>
       </div>
     </section>
 
@@ -565,7 +501,7 @@
         {
           if(response==="")
           {
-            $('#result').html("<a href='#' class='list-group-item list-group-item-action' aria-current='true'>No Record(s)</a>");
+            $('#result').html("<tr><td colspan='5'><center>No Record(s)</center></td></tr>");
           }
           else
           {

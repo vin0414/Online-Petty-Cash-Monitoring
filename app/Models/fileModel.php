@@ -14,5 +14,5 @@ class fileModel extends Model
     protected $returnType     = 'array';
     protected $useSoftDeletes = false;
 
-    protected $allowedFields = ['Fullname', 'Department','date','Purpose','Amount','File','Status','accountID'];
+    protected $allowedFields = ['Fullname', 'Department','Date','Purpose','Amount','File','Status','accountID'];
 }

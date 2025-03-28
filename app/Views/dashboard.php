@@ -154,6 +154,7 @@
 
       var options = {
       title: '',
+      pieHole: 0.5,
       curveType: 'function',
       legend: { position: 'bottom' },
       };

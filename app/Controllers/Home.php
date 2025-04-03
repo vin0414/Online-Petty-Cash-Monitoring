@@ -190,7 +190,7 @@ class Home extends BaseController
 
     public function fetchUser()
     {
-        $accountModel = new \App\Models\AccountModel();
+        $accountModel = new \App\Models\accountModel();
 
         // Get search term, limit, and offset from the request (GET parameters)
         $searchTerm = $_GET['search']['value'] ?? '';
@@ -376,7 +376,7 @@ class Home extends BaseController
 
     public function fetchDepartment()
     {
-        $departmentModel = new \App\Models\DepartmentModel();
+        $departmentModel = new \App\Models\departmentModel();
         $searchTerm = $_GET['search']['value'] ?? '';
 
         // Apply the search filter for the main query

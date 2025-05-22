@@ -33,39 +33,43 @@ class FileController extends BaseController
 
         if(!$validation)
         {
-            return view('new',['validation'=>$this->validator]);
+            return $this->response->SetJSON(['error' => $this->validator->getErrors()]);
         }
         else
         {
-            if ($file->isValid() && ! $file->hasMoved())
+            $amt = str_replace(",","",$amount);
+            if($amt > 2500)
             {
-                $filename = date('YmdHis').$file->getClientName();
-                $file->move('files/',$filename);
-                $user = session()->get('loggedUser');
-                $status = 0;
-                $amt = str_replace(",","",$amount);
-                $data = ['Fullname'=>$fullname, 'Department'=>$department,'date'=>$date,
-                        'Purpose'=>$purpose,'Amount'=>$amt,'File'=>$filename,'Status'=>$status,'accountID'=>$user];
-                $fileModel->save($data);
-                //get the requestID
-                $requestFile = $fileModel->WHERE('Fullname',$fullname)
-                                         ->WHERE('Department',$department)
-                                         ->WHERE('Amount',$amt)
-                                         ->WHERE('accountID',$user)
-                                         ->first();
-                //send to approver
-                $record = ['accountID'=>$this->request->getPost('approver'), 
-                            'requestID'=>$requestFile['requestID'],
-                            'DateReceived'=>date('Y-m-d'),
-                            'DateApproved'=>'',
-                            'Status'=>0];
-                $approveModel->save($record);
-                return redirect()->to('/new')->with('success', 'Form submitted successfully');
+                $validation = ['amount','The amount must not exceed 2,500.00'];
+                return $this->response->SetJSON(['error' => $validation]);
             }
             else
             {
-                $validation = ['file','No file was selected or the file is invalid'];
-                return view('new', ['validation' => $validation]);
+                if ($file->isValid() && ! $file->hasMoved())
+                {
+                    $filename = date('YmdHis').$file->getClientName();
+                    $file->move('files/',$filename);
+                    $user = session()->get('loggedUser');
+                    $status = 0;
+                    $data = ['Fullname'=>$fullname, 'Department'=>$department,'Date'=>$date,
+                            'Purpose'=>$purpose,'Amount'=>$amt,'File'=>$filename,'Status'=>$status,'accountID'=>$user];
+                    $fileModel->save($data);
+                    //get the requestID
+                    $lastInsertId = $fileModel->insertID();
+                    //send to approver
+                    $record = ['accountID'=>$this->request->getPost('approver'), 
+                                'requestID'=>$lastInsertId,
+                                'DateReceived'=>date('Y-m-d'),
+                                'DateApproved'=>'',
+                                'Status'=>0];
+                    $approveModel->save($record);
+                    return $this->response->SetJSON(['success' => 'Successfully submitted']);
+                }
+                else
+                {
+                    $validation = ['file','No file was selected or the file is invalid'];
+                    return $this->response->SetJSON(['error' => $validation]);
+                }
             }
         }
     }
@@ -104,7 +108,7 @@ class FileController extends BaseController
             if(empty($file->getClientName()))
             {
                 $amt = str_replace(",","",$amount);
-                $data = ['Fullname'=>$fullname, 'Department'=>$department,'date'=>$date,
+                $data = ['Fullname'=>$fullname, 'Department'=>$department,'Date'=>$date,
                         'Purpose'=>$purpose,'Amount'=>$amt,'Status'=>$hold['status']];
                 $fileModel->update($id,$data);
             }
@@ -112,7 +116,7 @@ class FileController extends BaseController
             {
                 $file->move('files/',$filename);
                 $amt = str_replace(",","",$amount);
-                $data = ['Fullname'=>$fullname, 'Department'=>$department,'date'=>$date,
+                $data = ['Fullname'=>$fullname, 'Department'=>$department,'Date'=>$date,
                         'Purpose'=>$purpose,'Amount'=>$amt,'File'=>$filename,'Status'=>$hold['status']];
                 $fileModel->update($id,$data);   
             }

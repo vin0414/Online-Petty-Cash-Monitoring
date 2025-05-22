@@ -51,12 +51,7 @@
         <div class="card">
             <div class="card-body">
                 <div class="card-title">New PCF</div>
-                <?php if(!empty(session()->getFlashdata('success'))) : ?>
-                    <div class="alert alert-success" role="alert">
-                        <?= session()->getFlashdata('success'); ?>
-                    </div>
-                <?php endif; ?>
-                <form method="POST" autocomplete="OFF" action="<?=site_url('save')?>" enctype="multipart/form-data" class="row g-3" id="frmRequest">
+                <form method="POST" autocomplete="OFF" enctype="multipart/form-data" class="row g-3" id="frmRequest">
                     <?= csrf_field(); ?>
                     <div class="col-12">
                         <div class="row g-3">
@@ -65,7 +60,7 @@
                                     <input type="text" class="form-control" name="fullname" value="<?=set_value('fullname')?>" required/>
                                     <label>Fullname</label>
                                 </div>
-                                <div class="text-danger"><?=isset($validation)? display_error($validation,'fullname') : '' ?></div>
+                                 <div id="fullname-error" class="error-message text-danger text-sm"></div>
                             </div>
                             <div class="col-lg-3">
                                 <div class="form-floating">
@@ -77,14 +72,14 @@
                                     </select>
                                     <label>Department</label>
                                 </div>
-                                <div class="text-danger"><?=isset($validation)? display_error($validation,'department') : '' ?></div>
+                                 <div id="department-error" class="error-message text-danger text-sm"></div>
                             </div>
                             <div class="col-lg-2">
                                 <div class="form-floating">
                                     <input type="date" class="form-control" name="date" id="date" value="<?=date('Y-m-d')?>" required/>
                                     <label>Date Needed</label>
                                 </div>
-                                <div class="text-danger"><?=isset($validation)? display_error($validation,'date') : '' ?></div>
+                                <div id="date-error" class="error-message text-danger text-sm"></div>
                             </div>
                         </div>
                     </div>
@@ -93,7 +88,7 @@
                             <textarea class="form-control" name="purpose" style="height:150px;" required><?=set_value('purpose')?></textarea>
                             <label>Purpose</label>
                         </div>
-                        <div class="text-danger"><?=isset($validation)? display_error($validation,'purpose') : '' ?></div>
+                         <div id="purpose-error" class="error-message text-danger text-sm"></div>
                     </div>
                     <div class="col-12">
                         <div class="row g-3">
@@ -102,14 +97,14 @@
                                     <input type="text" class="form-control" name="amount" value="<?=set_value('amount')?>" required/>
                                     <label>Amount</label>
                                 </div>
-                                <div class="text-danger"><?=isset($validation)? display_error($validation,'amount') : '' ?></div>
+                                 <div id="amount-error" class="error-message text-danger text-sm"></div>
                             </div>
                             <div class="col-lg-6">
                                 <div class="form-floating">
                                     <input type="file" class="form-control" name="file" value="<?=set_value('file')?>" required/>
                                     <label>Attachment</label>
                                 </div>
-                                <div class="text-danger"><?=isset($validation)? display_error($validation,'file') : '' ?></div>
+                                 <div id="file-error" class="error-message text-danger text-sm"></div>
                             </div>
                         </div>
                     </div>
@@ -123,7 +118,7 @@
                             </select>
                             <label>Department Head/Intermediate Supervisor</label>
                         </div>
-                        <div class="text-danger"><?=isset($validation)? display_error($validation,'approver') : '' ?></div>
+                        <div id="approver-error" class="error-message text-danger text-sm"></div>
                     </div>
                     <div class="col-12">
                         <button type="submit" class="btn btn-primary"><span class="bx bx-mail-send"></span>&nbsp;Send File</button>
@@ -163,13 +158,51 @@
 
   <!-- Template Main JS File -->
   <script src="assets/js/main.js"></script>
+  <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script type="text/javascript">
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('date').setAttribute('min', today);
     // Reset form if the success message is displayed
-    <?php if(!empty(session()->getFlashdata('success'))): ?>
-        $('#frmRequest')[0].reset();
-    <?php endif; ?>
+    $('#frmRequest').on('submit',function(e){
+        e.preventDefault();
+        $('.error-message').html('');
+        let data = $(this).serialize();
+        $.ajax({
+            url: "<?=site_url('save')?>",
+            method: "POST",
+            data: new FormData(this),
+            contentType: false,
+            cache: false,
+            processData: false,
+            success: function(response) {
+                if (response.success) {
+                    $('#frmRequest')[0].reset();
+                    Swal.fire({
+                        title: 'Great!',
+                        text: "Successfully submitted",
+                        icon: 'success',
+                        confirmButtonText: 'Continue'
+                    }).then((result) => {
+                        // Action based on user's choice
+                        if (result.isConfirmed) {
+                            // Perform some action when "Yes" is clicked
+                            location.reload();
+                        }
+                    });
+                } else {
+                    var errors = response.error;
+                    // Iterate over each error and display it under the corresponding input field
+                    for (var field in errors) {
+                        $('#' + field + '-error').html('<p>' + errors[field] +
+                            '</p>'); // Show the first error message
+                        $('#' + field).addClass(
+                            'text-danger'); // Highlight the input field with an error
+                    }
+                }
+            }
+        });
+    });
    </script>
 </body>
 

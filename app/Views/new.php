@@ -29,6 +29,9 @@
 
   <!-- Template Main CSS File -->
   <link href="assets/css/style.css" rel="stylesheet">
+  <style>
+    .text-danger{color:red;}
+  </style>
 </head>
 
 <body>

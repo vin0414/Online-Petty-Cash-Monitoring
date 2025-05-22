@@ -40,7 +40,7 @@ class FileController extends BaseController
             $amt = str_replace(",","",$amount);
             if($amt > 2500)
             {
-                $validation = ['amount','The amount must not exceed 2,500.00'];
+                $validation = ['amount'=>'The amount must not exceed 2,500.00'];
                 return $this->response->SetJSON(['error' => $validation]);
             }
             else
@@ -67,7 +67,7 @@ class FileController extends BaseController
                 }
                 else
                 {
-                    $validation = ['file','No file was selected or the file is invalid'];
+                    $validation = ['file'=>'No file was selected or the file is invalid'];
                     return $this->response->SetJSON(['error' => $validation]);
                 }
             }

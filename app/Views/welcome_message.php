@@ -64,12 +64,12 @@
                     <div class="col-12">
                       <label for="yourUsername" class="form-label">Username</label>
                       <input type="text" name="username" class="form-control" id="yourUsername" value="<?=set_value('username')?>" required>
-                      <div class="text-danger"><?=isset($validation)? display_error($validation,'username') : '' ?></div>
+                      <div class="text-danger"><?= $validation->getError('username'); ?></div>
                     </div>
                     <div class="col-12">
                       <label for="yourPassword" class="form-label">Password</label>
                       <input type="password" name="password" class="form-control" id="yourPassword" required>
-                      <div class="text-danger"><?=isset($validation)? display_error($validation,'password') : '' ?></div>
+                      <div class="text-danger"><?= $validation->getError('password'); ?></div>
                     </div>
                     <div class="col-12">
                       <div class="form-check">

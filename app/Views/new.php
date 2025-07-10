@@ -54,6 +54,11 @@
         <div class="card">
             <div class="card-body">
                 <div class="card-title">New PCF</div>
+                <?php if(!empty(session()->getFlashdata('fail'))) : ?>
+                    <div class="alert alert-warning" role="alert">
+                        <i class="icon-copy bi bi-exclamation-circle"></i>&nbsp;<?= session()->getFlashdata('fail'); ?>
+                    </div>
+                <?php endif; ?>
                 <form method="POST" autocomplete="OFF" enctype="multipart/form-data" class="row g-3" id="frmRequest">
                     <?= csrf_field(); ?>
                     <div class="col-12">
@@ -124,7 +129,11 @@
                         <div id="approver-error" class="error-message text-danger text-sm"></div>
                     </div>
                     <div class="col-12">
+                        <?php if(!empty(session()->getFlashdata('fail'))) : ?>
+                        <button type="submit" class="btn btn-primary" disabled><span class="bx bx-mail-send"></span>&nbsp;Send File</button>
+                        <?php else: ?>
                         <button type="submit" class="btn btn-primary"><span class="bx bx-mail-send"></span>&nbsp;Send File</button>
+                        <?php endif; ?>
                     </div>
                 </form>
             </div>

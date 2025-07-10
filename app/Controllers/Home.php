@@ -54,6 +54,23 @@ class Home extends BaseController
         //department
         $departmentModel = new \App\Models\departmentModel();
         $department = $departmentModel->findAll();
+        //check liquidation records
+        $fileModel = new \App\Models\fileModel();
+        $checkFiles = $fileModel->WHERE('status',5)->WHERE('accountID',session()->get('loggedUser'))->findAll();
+        //liquidation checker
+        $listModel = new \App\Models\listModel();
+        $lists = $listModel->WHERE('accountID',session()->get('loggedUser'))->findAll();
+        // Create an array of file_ids from listModel for comparison
+        $listFileIds = array_column($lists, 'requestID');
+
+        // Filter files where the file_id is NOT in the listModel file_ids
+        $unmatchedFiles = array_filter($checkFiles, function($file) use ($listFileIds) {
+            return !in_array($file['requestID'], $listFileIds);
+        });
+
+        if (!empty($unmatchedFiles)) {
+            session()->setFlashdata('fail', 'Some Request(s) have not been liquidated.');
+        }
 
         $data = ['title'=>$title,'account'=>$account,'department'=>$department];
         return view('new',$data);

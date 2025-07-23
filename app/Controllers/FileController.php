@@ -144,7 +144,7 @@ class FileController extends BaseController
         $builder->select('a.DateReceived,a.DateApproved,a.Status,a.approveID,b.requestID,b.Fullname,b.Department,b.Amount,b.Purpose,b.File');
         $builder->join('tblrequest b','b.requestID=a.requestID','LEFT');
         $builder->WHERE('a.accountID',session()->get('loggedUser'));
-        $builder->groupBy('a.approveID');
+        $builder->groupBy('a.approveID')->orderBy('a.status');
         if ($searchTerm) {
             // Add a LIKE condition to filter based on school name or address or any other column you wish to search
             $builder->groupStart()

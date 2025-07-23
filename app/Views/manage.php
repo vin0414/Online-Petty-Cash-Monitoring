@@ -59,23 +59,24 @@
           <table class="table table-striped datatable" style="font-size:12px;">
             <thead class="bg-primary text-white">
               <th>Date Needed</th>
+              <th>Control No.</th>
               <th>Fullname</th>
               <th>Department</th>
               <th>Amount</th>
-              <th>Purpose</th>
               <th>Status</th>
               <th>Release?</th>
               <th>When?</th>
               <th>Comment</th>
+              <th>Action</th>
             </thead>
             <tbody>
             <?php foreach($files as $row): ?>
               <tr>
                 <td><?php echo $row->Date ?></td>
+                <td><?php echo "PCF-".str_pad($row->requestID, 4, '0', STR_PAD_LEFT) ?></td>
                 <td><?php echo $row->Fullname ?></td>
                 <td><?php echo $row->Department ?></td>
                 <td><?php echo number_format($row->Amount,2) ?></td>
-                <td><?php echo substr($row->Purpose,0,50) ?>...</td>
                 <td>
                   <?php if($row->Status==0){ ?>
                     <span class="badge bg-warning">To Department Head</span>
@@ -104,6 +105,11 @@
                 </td>
                 <td><?php echo $row->DateTagged ?></td>
                 <td><?php echo substr($row->Comment,0,255) ?>...</td>
+                <td>
+                    <?php if($row->Status==5): ?>
+                    <a href="<?=site_url('print')?>/<?=$row->requestID?>" target="_blank" class="btn btn-sm btn-primary"><i class="bi bi-printer"></i>&nbsp;Print</a>
+                    <?php endif; ?>
+                </td>
               </tr>
             <?php endforeach; ?>
             </tbody>

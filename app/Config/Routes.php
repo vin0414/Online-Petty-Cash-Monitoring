@@ -64,6 +64,8 @@ $routes->get('settle-balance','Compute::settle');
 $routes->get('unliquidated','Compute::unliquidated');
 $routes->get('cash-on-hand','Compute::cashOnHand');
 $routes->get('total-amount','Compute::total');
+//print
+$routes->get('print/(:any)','FileController::print/$1');
 
 $routes->group('',['filter'=>'AlreadyLoggedIn'],function($routes)
 {

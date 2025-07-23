@@ -121,12 +121,14 @@ class Home extends BaseController
     {
         $title = "Manage Cash";
         //file
-        $fileModel = new \App\Models\fileModel();
-        $files = $fileModel->WHERE('Status',5)->findAll();
+        $sql = "Select a.requestID from tblrequest a WHERE a.Status=5 
+        AND NOT EXISTS (Select b.requestID from tbl_list b WHERE b.requestID=a.requestID)";
+        $query = $this->db->query($sql);
+        $files = $query->getResult();
         //balance
         $balanceModel = new \App\Models\balanceModel();
         $balance = $balanceModel->findAll();
-        //data
+        //data 
         $data = ['title'=>$title,'files'=>$files,'balance'=>$balance];
         return view('manage-cash',$data);
     }

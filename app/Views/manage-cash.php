@@ -246,7 +246,7 @@
               <select class="form-control" name="request" required>
                 <option value="">Choose</option>
                 <?php foreach($files as $row): ?>
-                <option value="<?php echo $row['requestID'] ?>"><?php echo "PCF-".str_pad($row['requestID'], 4, '0', STR_PAD_LEFT) ?></option>
+                <option value="<?php echo $row->requestID ?>"><?php echo "PCF-".str_pad($row->requestID, 4, '0', STR_PAD_LEFT) ?></option>
                 <?php endforeach; ?>
               </select>
               <div id="request-error" class="error-message text-danger text-sm"></div>
@@ -377,12 +377,12 @@
               console.log(response);
                 $('#form1')[0].reset();
                 $('#replenishModal').modal('hide');
-                fetch();unsettle();
                 Swal.fire({
                     title: "Great!",
                     text: "Successfully saved",
                     icon: "success"
                 });
+                location.reload();
             } else {
                 var errors = response.error;
                 // Iterate over each error and display it under the corresponding input field
@@ -409,7 +409,6 @@
             if (response.success) {
                 $('#frmCash')[0].reset();
                 $('#addCashModal').modal('hide');
-                fetch();
                 Swal.fire({
                     title: "Great!",
                     text: "Successfully saved",
@@ -440,7 +439,7 @@
           success:function(response)
           {
             if(response==="success"){
-              fetch();location.reload();
+              location.reload();
             }
             else
             {
@@ -461,7 +460,7 @@
           success:function(response)
           {
             if(response==="success"){
-              fetch();location.reload();
+              location.reload();
             }
             else
             {

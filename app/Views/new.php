@@ -31,6 +31,23 @@
   <link href="assets/css/style.css" rel="stylesheet">
   <style>
     .text-danger{color:red;}
+    .loading-spinner{
+        width:30px;
+        height:30px;
+        border:2px solid indigo;
+        border-radius:50%;
+        border-top-color:#0001;
+        display:inline-block;
+        animation:loadingspinner .7s linear infinite;
+        }
+    @keyframes loadingspinner{
+        0%{
+            transform:rotate(0deg)
+        }
+        100%{
+            transform:rotate(360deg)
+        }
+    }
   </style>
 </head>
 
@@ -139,8 +156,19 @@
             </div>
         </div>
     </section>
-
   </main><!-- End #main -->
+
+    <div class="modal" id="modal-loading" data-backdrop="static">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-body text-center">
+                    <div class="loading-spinner mb-2"></div>
+                    <div>Loading</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
   <!-- ======= Footer ======= -->
   <footer id="footer" class="footer">
@@ -180,6 +208,7 @@
         e.preventDefault();
         $('.error-message').html('');
         let data = $(this).serialize();
+        $('#modal-loading').modal('show');
         $.ajax({
             url: "<?=site_url('save')?>",
             method: "POST",
@@ -188,6 +217,7 @@
             cache: false,
             processData: false,
             success: function(response) {
+                $('#modal-loading').modal('hide');
                 if (response.success) {
                     $('#frmRequest')[0].reset();
                     Swal.fire({

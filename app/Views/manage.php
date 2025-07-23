@@ -103,7 +103,7 @@
                   <?php }?>
                 </td>
                 <td><?php echo $row->DateTagged ?></td>
-                <td><?php echo substr($row->Comment,0,100) ?>...</td>
+                <td><?php echo substr($row->Comment,0,255) ?>...</td>
               </tr>
             <?php endforeach; ?>
             </tbody>

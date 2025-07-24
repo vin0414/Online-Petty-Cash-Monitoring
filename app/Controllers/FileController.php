@@ -384,7 +384,7 @@ class FileController extends BaseController
         $builder->select('a.*,b.DateTagged,b.Status as tag');
         $builder->join('tblmonitor b','b.requestID=a.requestID','LEFT');
         $builder->WHERE('a.Status',5);
-        $builder->groupBy('a.requestID');
+        $builder->groupBy('a.requestID')->orderBy('b.Status');
         if ($searchTerm) {
             // Add a LIKE condition to filter based on school name or address or any other column you wish to search
             $builder->groupStart()
@@ -1022,7 +1022,7 @@ class FileController extends BaseController
                             <tbody>
                             <tr>
                                 <td>
-                                Prepared By<br/><br/>
+                                &nbsp;Prepared By<br/><br/>
                                 <center><img src=".$preparedByImage." width='120'/></center>
                                 <u><center><b>".$preparedBy['Fullname']."</b></center></u><br/>
                                 <center>Signature Above Printed Name/Date</center>
@@ -1050,7 +1050,7 @@ class FileController extends BaseController
                             </tr>
                             <tr>
                                 <td>
-                                Prepared By<br/><br/>
+                                &nbsp;Approved By<br/><br/>
                                 <center><img src=".$priorImg." width='120'/></center>
                                 <u><center><b>".$priorName['Fullname']."</b></center></u><br/>
                                 <center>Signature Above Printed Name/Date</center>
